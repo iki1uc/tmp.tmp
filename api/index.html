@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌀 RIR · Reinheitsinstanz · 243 · KIT · XyX</title>
+
+<!-- Meta-Tags aus ID.html übernommen -->
+<meta name="system-id" content="RIR-3TH-SEC">
+<meta name="role" content="sweet">
+<meta name="room" content="active">
+<meta name="orbit" content="enabled">
+<meta name="corridor" content="linked">
+<meta name="suite" content="available">
+<meta name="origin" content="defined">
+<meta name="runner" content="ready">
+
+<style>
+  :root { --bg:#0a0a12; --fg:#0f0; --axiom:#ffaa00; --rir:#00ccff; --xyx:#ff66ff; --border:#1a1a2a; --gold:#ffd700; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:#cde; font-family:'Consolas',monospace; padding:16px; min-height:100vh; }
+  header { border-bottom:2px solid var(--axiom); padding-bottom:8px; margin-bottom:12px; text-align:center; }
+  header h1 { font-size:20px; background:linear-gradient(90deg,var(--axiom),var(--rir),var(--xyx)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px; }
+  header .sub { font-size:9px; color:#556; letter-spacing:2px; margin-top:4px; }
+
+  .meta-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:4px; background:rgba(0,0,0,0.2); border-radius:8px; padding:6px 10px; margin-bottom:12px; }
+  .meta-item { text-align:center; font-size:8px; color:#8ab8e6; }
+  .meta-item b { display:block; color:#4f4; font-size:10px; }
+
+  main { display:grid; grid-template-columns: 2fr 2fr 1.6fr; gap:10px; }
+  @media (max-width:1000px){ main{grid-template-columns:1fr;} }
+
+  .panel { background:#05050a; border:1px solid var(--border); border-radius:8px; padding:12px; }
+  .panel h2 { color:var(--axiom); font-size:12px; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:8px; }
+
+  label { font-size:10px; color:#789; }
+  input[type=number] { background:#001; color:var(--fg); border:1px solid #034; padding:4px 6px; border-radius:4px; font-family:inherit; width:60px; font-size:11px; }
+  button { background:#111; color:var(--fg); border:1px solid #333; padding:5px 12px; border-radius:5px; cursor:pointer; font-family:inherit; font-size:10px; transition:.2s; }
+  button:hover { background:#1a1a2a; border-color:var(--axiom); }
+  button.primary { border-color:var(--axiom); color:var(--axiom); }
+  button.primary:hover { background:var(--axiom); color:#000; }
+
+  .xyz-row { display:flex; gap:8px; align-items:center; margin:8px 0; flex-wrap:wrap; }
+  pre { background:#000; border-left:3px solid #6cf; padding:10px; white-space:pre-wrap; font-size:10px; border-radius:4px; margin-top:8px; }
+  .accept { color:#4f4; } .reject { color:#f44; }
+
+  .rechner-row { display:flex; justify-content:space-between; align-items:center; font-size:9px; margin-bottom:5px; color:#8ab8e6; }
+  .rechner-row .dot { width:7px; height:7px; border-radius:50%; display:inline-block; margin-right:5px; background:#4f4; box-shadow:0 0 6px #4f4; }
+  .link-row { display:flex; justify-content:space-between; align-items:center; font-size:9px; color:#8ab8e6; margin:4px 0; }
+  .link-row button { font-size:8px; padding:3px 8px; }
+  .link-status { color:#f44; } .link-status.active { color:#4f4; }
+
+  #log { max-height:130px; overflow-y:auto; font-size:9px; color:#6a8a8a; line-height:1.4; background:#06060a; border-radius:4px; padding:6px 8px; margin-top:8px; }
+  #log .entry { padding:1px 0; border-bottom:1px solid #0a0a12; }
+  #log .time { color:#444; } #log .ok{color:#4f4;} #log .warn{color:var(--axiom);} #log .err{color:#f44;}
+
+  footer { text-align:center; margin-top:12px; font-size:9px; color:#456; border-top:1px solid var(--border); padding-top:6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌀 RIR · Reinheitsinstanz · 243 · KIT · XyX</h1>
+  <div class="sub">Station 1 · exist → structure → purity → filter → return</div>
+</header>
+
+<div class="meta-bar" id="metaBar"></div>
+
+<main>
+  <!-- RIR.Core Prüfung -->
+  <div class="panel">
+    <h2>🛡 RIR.Core · Reinheitsprüfung</h2>
+    <div class="xyz-row">
+      <label>x <input type="number" id="inX" value="3"></label>
+      <label>y <input type="number" id="inY" value="4"></label>
+      <label>z <input type="number" id="inZ" value="9"></label>
+    </div>
+    <div class="xyz-row">
+      <button class="primary" id="btnCheck">🛡 RIR prüfen</button>
+      <button id="btnKit">⚙️ KIT.run() — Volle Pipeline</button>
+    </div>
+    <pre id="rirOut">Bereit — x/y/z eingeben und prüfen.</pre>
+  </div>
+
+  <!-- 243.js State Generator -->
+  <div class="panel">
+    <h2>🌀 243.js · State‑Generator (DQF · XyX)</h2>
+    <div style="font-size:9px;color:#789;line-height:1.6;">
+      D = Dimension · Q = Quantenfaktor · F = Flavor<br>
+      <span style="color:var(--xyx);">XyX aktiv</span>, wenn x, y oder z = 9<br>
+      <span style="color:#4f4;">AIR</span> = Auftrieb (Summe gerade) · <span style="color:#f66;">AIV</span> = Abtrieb (Summe ungerade)
+    </div>
+    <pre id="stateOut">Noch kein Zustand generiert.</pre>
+  </div>
+
+  <!-- CONNECT · 3 RECHNER -->
+  <div class="panel">
+    <h2>🔗 CONNECT · 3 RECHNER</h2>
+    <div class="rechner-row"><span><span class="dot"></span>RECHNER‑1</span><span id="r1state">online</span></div>
+    <div class="rechner-row"><span><span class="dot"></span>RECHNER‑2</span><span id="r2state">online</span></div>
+    <div class="rechner-row"><span><span class="dot"></span>RECHNER‑3</span><span id="r3state">online</span></div>
+
+    <div class="link-row"><span>R1 ↔ R2</span><span class="link-status" id="linkR1R2">○ inaktiv</span><button data-link="R1-R2" onclick="toggleLink(this.dataset.link)">TOGGLE</button></div>
+    <div class="link-row"><span>R2 ↔ R3</span><span class="link-status" id="linkR2R3">○ inaktiv</span><button data-link="R2-R3" onclick="toggleLink(this.dataset.link)">TOGGLE</button></div>
+    <div class="link-row"><span>R1 ↔ R3</span><span class="link-status" id="linkR1R3">○ inaktiv</span><button data-link="R1-R3" onclick="toggleLink(this.dataset.link)">TOGGLE</button></div>
+
+    <div class="xyz-row">
+      <button id="btnConnectAll">🔗 CONNECT ALL</button>
+      <button id="btnPing">📡 PING</button>
+    </div>
+    <div style="font-size:9px;color:#8ab8e6;margin-top:6px;">Netzwerk‑Boost auf RIR‑Durchsatz: <b id="netBoost" style="color:#4f4;">0%</b></div>
+
+    <div id="log"></div>
+  </div>
+</main>
+
+<footer>RIR · Station 1 · 3.js/81.js/XyX.js/243.js/KIT.js zusammengeführt · © iki1uc wieimmer</footer>
+
+<script>
+// ============================================================
+// Alles inline, statt über ES-Module/fetch() — läuft dadurch
+// auch per Doppelklick ohne Server, ohne Pfad-/Import-Probleme.
+// ============================================================
+
+// ── log ──
+function log(msg, type='ok'){
+  const el = document.getElementById('log');
+  const time = new Date().toLocaleTimeString();
+  const e = document.createElement('div'); e.className = 'entry';
+  e.innerHTML = `<span class="time">[${time}]</span> <span class="${type}">${msg}</span>`;
+  el.appendChild(e); el.scrollTop = el.scrollHeight;
+  while (el.children.length > 40) el.removeChild(el.firstChild);
+}
+
+// ── Meta-Bar (aus ID.html) ──
+const META = { "system-id":"RIR-3TH-SEC", role:"sweet", room:"active", orbit:"enabled", corridor:"linked", suite:"available", origin:"defined", runner:"ready" };
+document.getElementById('metaBar').innerHTML = Object.entries(META).map(([k,v]) =>
+  `<div class="meta-item"><b>${v}</b>${k}</div>`).join('');
+
+// ============================================================
+// RIR.Core (1:1 aus RIR.Core übernommen — Bug behoben:
+// wird jetzt korrekt eingebunden statt über kaputten Importpfad)
+// ============================================================
+const RIR = {
+  exist(input) { return input !== undefined && input !== null; },
+  structure(input) {
+    if (typeof input !== "object") return false;
+    return ["x", "y", "z"].every(key => key in input);
+  },
+  purity(input) {
+    const { x, y, z } = input;
+    return Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z);
+  },
+  filter(input) {
+    if (!this.exist(input)) return null;
+    if (!this.structure(input)) return null;
+    if (!this.purity(input)) return null;
+    return input;
+  },
+  return(input) {
+    const packet = this.filter(input);
+    if (!packet) return { RIR: "reject" };
+    return { RIR: "accept", packet };
+  }
+};
+
+// ── Peap — FIX: vorher RIR.Core.filter/.return (falsch, RIR.Core
+// gibt es als Namespace nicht) → jetzt direkt auf RIR ──
+const Peap = {
+  run(input) {
+    const packet = RIR.filter(input);
+    return RIR.return(packet);
+  }
+};
+
+// ============================================================
+// 3.js / 81.js / XyX.js — unverändert übernommen
+// ============================================================
+function baseDQF(x, y, z) {
+  return { D: `Dim(${x + y + z})`, Q: (x * y * z) % 3, F: `F-${Math.abs(x - y)}` };
+}
+function extendedDQF(x, y, z) {
+  return { D: `Dim9(${(x + y + z) * 9})`, Q: (x * y * z) % 9, F: `FX-${(x + 1) * (y + 1)}` };
+}
+function XyX(x, y, z) {
+  const sum = x + y + z;
+  const mode = sum % 2 === 0 ? "AIR" : "AIV";
+  return {
+    mode,
+    lift: mode === "AIR" ? sum * 1.5 : 0,
+    down: mode === "AIV" ? sum * 2.1 : 0,
+    D: `DimX(${x * y * z})`, Q: (x + y + z) % 7, F: `Fxy-${x}-${y}-${z}`
+  };
+}
+
+// ============================================================
+// 243.js — Proxy + Routing (unverändert übernommen)
+// ============================================================
+function generateState(x, y, z) {
+  if (x === 9 || y === 9 || z === 9) return XyX(x, y, z);
+  const dqf = (x + y + z) > 20 ? extendedDQF(x, y, z) : baseDQF(x, y, z);
+  return { x: x * x, y: y * 2, z: z + 7, meta: `Zustand (${x},${y},${z})`, dqf };
+}
+function getState(id) {
+  const [x, y, z] = id.split(',').map(Number);
+  return generateState(x, y, z);
+}
+const stateProxy = new Proxy({}, { get(_, prop) { return getState(prop); } });
+
+// ============================================================
+// KIT.js — im Repo referenziert, aber Inhalt fehlte im geteilten
+// Material. Hier sinnvoll ergänzt: KIT.run() fährt die volle
+// Pipeline RIR-Prüfung → 243-State-Generierung.
+// ============================================================
+const KIT = {
+  run(input) {
+    const check = RIR.return(input);
+    if (check.RIR === "reject") return { status: "reject", source: "RIR" };
+    const state = generateState(input.x, input.y, input.z);
+    return { status: "ok", source: "KIT", check, state };
+  }
+};
+
+// ── RIR_KIT — FIX: rief vorher undefiniertes KIT_RUN() auf,
+// obwohl { KIT } importiert wurde → jetzt korrekt KIT.run() ──
+function RIR_KIT(input) {
+  const check = RIR.return(input);
+  if (check.RIR === "reject") return { status: "reject", source: "RIR" };
+  return KIT.run(input);
+}
+
+// ============================================================
+// UI — RIR.Core prüfen / KIT.run() / 243-State
+// ============================================================
+function readXYZ(){
+  return { x: Number(document.getElementById('inX').value), y: Number(document.getElementById('inY').value), z: Number(document.getElementById('inZ').value) };
+}
+
+document.getElementById('btnCheck').addEventListener('click', () => {
+  const input = readXYZ();
+  const result = RIR.return(input);
+  const out = document.getElementById('rirOut');
+  out.innerHTML = result.RIR === 'accept'
+    ? `<span class="accept">✔ ACCEPT</span>\n${JSON.stringify(result, null, 2)}`
+    : `<span class="reject">✘ REJECT</span>\n${JSON.stringify(result, null, 2)}`;
+  log(`🛡 RIR-Prüfung (${input.x},${input.y},${input.z}) → ${result.RIR}`, result.RIR === 'accept' ? 'ok' : 'err');
+
+  const state = generateState(input.x, input.y, input.z);
+  document.getElementById('stateOut').textContent = JSON.stringify(state, null, 2);
+});
+
+document.getElementById('btnKit').addEventListener('click', () => {
+  const input = readXYZ();
+  const boost = 1 + netBoostVal();
+  const result = RIR_KIT(input);
+  document.getElementById('rirOut').innerHTML = `<b>KIT.run() Pipeline</b>\n${JSON.stringify(result, null, 2)}\n\nNetzwerk-Boost: ${(boost*100-100).toFixed(0)}%`;
+  if (result.state) document.getElementById('stateOut').textContent = JSON.stringify(result.state, null, 2);
+  log(`⚙️ KIT.run(${input.x},${input.y},${input.z}) → ${result.status}`, result.status === 'ok' ? 'ok' : 'err');
+});
+
+// ============================================================
+// CONNECT · 3 RECHNER (wie in deinen anderen Projekten)
+// ============================================================
+const LINKS = { 'R1-R2':{active:false}, 'R2-R3':{active:false}, 'R1-R3':{active:false} };
+
+function toggleLink(key){
+  const link = LINKS[key]; if (!link) return;
+  link.active = !link.active;
+  const el = document.getElementById('link' + key.replace('-', ''));
+  el.textContent = link.active ? '● aktiv' : '○ inaktiv';
+  el.className = 'link-status' + (link.active ? ' active' : '');
+  updateNetBoost();
+}
+function connectAll(){
+  Object.keys(LINKS).forEach(k => {
+    LINKS[k].active = true;
+    const el = document.getElementById('link' + k.replace('-', ''));
+    el.textContent = '● aktiv'; el.className = 'link-status active';
+  });
+  updateNetBoost();
+  log('🔗 CONNECT ALL · R1/R2/R3 vermascht', 'ok');
+}
+function pingAll(){
+  ['R1','R2','R3'].forEach(k => {
+    const el = document.getElementById(k.toLowerCase()+'state');
+    const ms = Math.floor(5 + Math.random()*20);
+    el.textContent = ms + 'ms';
+    setTimeout(() => el.textContent = 'online', 1200);
+  });
+  log('📡 PING · R1/R2/R3', 'warn');
+}
+function netBoostVal(){
+  const active = Object.values(LINKS).filter(l => l.active).length;
+  return active / 3 * 0.5; // volles Netz = +50% "Boost" auf die Pipeline
+}
+function updateNetBoost(){
+  document.getElementById('netBoost').textContent = Math.round(netBoostVal()/0.5*100) + '%';
+}
+document.getElementById('btnConnectAll').addEventListener('click', connectAll);
+document.getElementById('btnPing').addEventListener('click', pingAll);
+
+// ── INIT ──
+log('🌀 RIR Master-Panel geladen — RIR.Core, 3/81/XyX, 243, KIT verknüpft', 'ok');
+log('🔧 Bug behoben: RIR.Core.js Importpfad → inline eingebunden', 'warn');
+log('🔧 Bug behoben: KIT_RUN() war undefiniert → KIT.run() ergänzt', 'warn');
+log('🔧 Bug behoben: Peap nutzte RIR.Core.filter → jetzt RIR.filter', 'warn');
+document.getElementById('btnCheck').click();
+</script>
+
+</body>
+</html>
