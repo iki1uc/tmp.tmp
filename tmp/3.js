@@ -6,7 +6,6 @@ class PrefetchPump {
   }
 
   pump(address) {
-    // Hardware‑nahe Prefetch‑Steuerung
     _mm_prefetch(address, this._flag());
   }
 
