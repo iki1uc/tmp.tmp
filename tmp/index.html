@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXIOMIAT · Ursprung · Kompatibilitäts‑Hub</title>
+<style>
+  :root {
+    --bg:#111; --fg:#e6e6e6; --dim:#8a8a8a; --axiom:#ffaa00; --nc:#f66;
+    --border:#2a2a2a; --accent:#7ff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: radial-gradient(ellipse at 50% 0%, #181818 0%, #0a0a0a 100%);
+    color: var(--fg); font-family: monospace; letter-spacing: 0.03em;
+    padding: 6vh 5vw; min-height: 100vh;
+  }
+
+  #origin { font-size: 2rem; text-align:center; opacity:0.95; }
+  #note { font-size: 0.95rem; text-align:center; opacity:0.6; margin-top:6px; }
+  .marker { text-align:center; margin-top:1.6rem; font-size:1.1rem; opacity:0.8; color:var(--axiom); }
+
+  section { max-width: 900px; margin: 3rem auto 0; }
+  h2 {
+    color: var(--axiom); font-size: 1rem; letter-spacing: 0.15em;
+    border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;
+  }
+
+  /* AXIOMIAT.SET */
+  #set-grid { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .set-item {
+    border: 1px solid var(--border); border-radius: 6px; padding: 10px 18px;
+    text-align:center; background:#151515;
+  }
+  .set-item .val { font-size:1.2rem; color:var(--accent); }
+  .set-item .lbl { font-size:0.7rem; color:var(--dim); margin-top:2px; }
+  #set-center { text-align:center; margin-top:14px; font-size:0.85rem; color:var(--nc); }
+
+  /* ACHS-KOMPASS */
+  #compass { display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .axis-group { border:1px solid var(--border); border-radius:6px; padding:10px; background:#151515; }
+  .axis-group .title { color:var(--accent); font-size:0.75rem; margin-bottom:6px; }
+  .axis-group .items { font-size:0.8rem; color:var(--fg); line-height:1.6; }
+  .axis-group .items span { color:var(--dim); }
+
+  /* KOMPATIBILITÄTS-TABELLE */
+  table { width:100%; border-collapse:collapse; font-size:0.78rem; margin-top:6px; }
+  th, td { border:1px solid var(--border); padding:8px; text-align:left; }
+  th { background:#181818; color:var(--axiom); font-weight:normal; }
+  td.axiomiat { color: var(--accent); }
+  tr:hover { background:#1a1a1a; }
+
+  /* HUB LINKS */
+  #hub-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:10px; }
+  .hub-card {
+    border:1px solid var(--border); border-radius:8px; padding:14px; background:#151515;
+    transition:0.2s; text-decoration:none; color:var(--fg); display:block;
+  }
+  .hub-card:hover { border-color: var(--axiom); background:#1a1a1a; }
+  .hub-card .name { color: var(--accent); font-size:0.95rem; }
+  .hub-card .desc { color: var(--dim); font-size:0.72rem; margin-top:4px; line-height:1.4; }
+  .hub-card .path { color:#555; font-size:0.65rem; margin-top:6px; }
+
+  #edit-hint {
+    max-width:900px; margin: 2rem auto 0; font-size:0.7rem; color:#555; text-align:center;
+    border-top:1px dashed var(--border); padding-top:10px;
+  }
+  footer { text-align:center; margin-top:3rem; font-size:0.65rem; color:#444; letter-spacing:0.1em; }
+</style>
+</head>
+<body>
+
+<div id="origin">iki1uc</div>
+<div id="note">vorläufige Station · axiomisch · fluid</div>
+<div class="marker">◉ Stammform · Family‑Help · Ursprung</div>
+
+<!-- AXIOMIAT.SET -->
+<section>
+  <h2>◈ AXIOMIAT.SET — Stammform</h2>
+  <div id="set-grid"></div>
+  <div id="set-center"></div>
+</section>
+
+<!-- ACHS-KOMPASS -->
+<section>
+  <h2>◈ Universelle Achs‑Orientierung</h2>
+  <div id="compass"></div>
+</section>
+
+<!-- KOMPATIBILITÄTS-ÜBERSETZER -->
+<section>
+  <h2>◈ Übersetzer — Kompatibilität zu allen Techniken</h2>
+  <table id="compat-table"></table>
+</section>
+
+<!-- HUB -->
+<section>
+  <h2>◈ Ursprung → Alle Stationen</h2>
+  <div id="hub-grid"></div>
+</section>
+
+<div id="edit-hint">
+  Pfade unter „path" sind relative Platzhalter — trage hier die echten Ordner-/Repo‑Pfade ein,
+  wenn AXIOMIAT und deine anderen Projekte im selben Verzeichnis bzw. auf GitHub Pages liegen.
+</div>
+
+<footer>AXIOMIAT · kein Anfang · kein Ende · aber wir streben · fluid · offen · bereit</footer>
+
+<script>
+// ============================================================
+// AXIOMIAT.SET (aus SET.js) + Mini-SET (AXIOMIAT.js)
+// ============================================================
+const AXIOMIAT = { origin:"iki1uc", state:"fluid", cache:true, ready:true };
+const AXIOMIAT_SET = { family:["AH","HA","ÄH","HÄ"], center:"NC", note:"Stammform. Vorläufig. Erweiterbar." };
+
+// ============================================================
+// Achs-Orientierung (aus README.md)
+// ============================================================
+const COMPASS = {
+  "Bewegung": ["up","down","left","right","main","back"],
+  "Meta":     ["in","out","echo","impulse"],
+  "Orbit":    ["inner","outer","cross","roundabout"]
+};
+
+// ============================================================
+// KOMPATIBILITÄTS-MAPPING — AXIOMIAT-Begriffe ↔ Achs-Systeme
+// deiner anderen Projekte. Ordnet AXIOMIAT als Ursprungs-Schicht
+// über die konkreten Achsen-Implementierungen ein.
+// ============================================================
+const COMPAT_ROWS = [
+  { axiomiat:"main / back",        ring:"X / T",      coin:"T‑Axiom (Träger)", artlink:"N0 (Origin)",      dreih3:"Station 3 (Form)" },
+  { axiomiat:"left / right",       ring:"Y / S",       coin:"Y‑Axiom (Fächer)", artlink:"NS (Surface)",     dreih3:"Station 3×3 (9D)" },
+  { axiomiat:"up / down",          ring:"Z / MOVE",     coin:"E‑Axiom (Energie)",artlink:"NC (Core)",        dreih3:"Station 6 (Dualform)" },
+  { axiomiat:"in / out",           ring:"X‑Kreuzpunkt", coin:"X‑Axiom (Verbindung)", artlink:"NC.sub (Sub-Trace)", dreih3:"Station 9 (Tensor)" },
+  { axiomiat:"echo / impulse",     ring:"EYE / MODE",   coin:"KI‑Axiom (Muster)", artlink:"NC.verify (Sync)", dreih3:"Station 12 (Quadrat)" },
+  { axiomiat:"inner / outer",      ring:"RESPO (CORE)",  coin:"C‑Axiom (Mitte)",  artlink:"Orbit (Heatmap)",  dreih3:"Station 6E (Energieform)" },
+  { axiomiat:"cross / roundabout", ring:"router‑matrix", coin:"SLIDE/WETTE",     artlink:"Bridge/Core‑Chain", dreih3:"φ‑Multiskala" }
+];
+
+// ============================================================
+// HUB — Verweise auf die anderen Stationen
+// ============================================================
+const HUB = [
+  { name:"RING", desc:"Achsen‑Router‑System (CORE/RESPO/EYE/MODE), AXI‑Link", path:"../RING/index.html" },
+  { name:"3hoch3", desc:"Energie‑Matrix‑Station 27D, Respo‑Evaluator (QI/IQQ, φ‑Multiskala)", path:"../3hoch3/index.html" },
+  { name:"ART.link", desc:"Portal‑Modul (ID/NC/Orbit/Bridge/Core‑Chain/Respo‑Linker)", path:"../ARTlink/index.html" },
+  { name:"COIN·SCHACH·6D", desc:"Axiom‑Matrix, Figuren, UNLINEAR‑Engine, MASSE", path:"../coin-schach/index.html" },
+  { name:"REAL‑CONNECT", desc:"KI‑User‑KI Netzwerk, 3 Teilnehmer, vollvermascht", path:"../real-connect/index.html" }
+];
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderSet(){
+  const grid = document.getElementById('set-grid');
+  grid.innerHTML = AXIOMIAT_SET.family.map(f => `
+    <div class="set-item"><div class="val">${f}</div><div class="lbl">Family</div></div>
+  `).join('');
+  document.getElementById('set-center').textContent =
+    `Zentrum: ${AXIOMIAT_SET.center} · state=${AXIOMIAT.state} · ${AXIOMIAT_SET.note}`;
+}
+
+function renderCompass(){
+  const wrap = document.getElementById('compass');
+  wrap.innerHTML = Object.entries(COMPASS).map(([group, items]) => `
+    <div class="axis-group">
+      <div class="title">${group}</div>
+      <div class="items">${items.map(i => `<span>·</span> ${i}`).join('<br>')}</div>
+    </div>
+  `).join('');
+}
+
+function renderCompat(){
+  const table = document.getElementById('compat-table');
+  table.innerHTML = `
+    <thead><tr><th>AXIOMIAT</th><th>RING</th><th>COIN·SCHACH</th><th>ART.link</th><th>3hoch3</th></tr></thead>
+    <tbody>
+      ${COMPAT_ROWS.map(r => `
+        <tr>
+          <td class="axiomiat">${r.axiomiat}</td>
+          <td>${r.ring}</td><td>${r.coin}</td><td>${r.artlink}</td><td>${r.dreih3}</td>
+        </tr>`).join('')}
+    </tbody>`;
+}
+
+function renderHub(){
+  const grid = document.getElementById('hub-grid');
+  grid.innerHTML = HUB.map(h => `
+    <a class="hub-card" href="${h.path}">
+      <div class="name">${h.name}</div>
+      <div class="desc">${h.desc}</div>
+      <div class="path">${h.path}</div>
+    </a>
+  `).join('');
+}
+
+renderSet();
+renderCompass();
+renderCompat();
+renderHub();
+</script>
+
+</body>
+</html>
