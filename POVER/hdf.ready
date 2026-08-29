@@ -1,0 +1,19 @@
+function TYQ(){
+  const TYQ = {
+    RAM: 8192,
+    USED: 0,
+    B: false,
+    BOOT() {
+      this.USED = 2048;
+      this.B = true;
+      console.log("TYQ: BOOT 2GB OK");
+    },
+    status() {
+      return this.RAM - this.USED;
+    }
+  };
+  TYQ.BOOT();
+  return TYQ.status();
+}
+
+console.log(TYQ()); // 6144
