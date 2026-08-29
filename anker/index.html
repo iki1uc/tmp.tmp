@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3hoch3 · Response Layer 7 · Energie‑Matrix (27D)</title>
+
+<style>
+  :root {
+    --bg: #0a0a12;
+    --fg: #7ff;
+    --accent: #6cf;
+    --axiom: #ffaa00;
+    --ok: #4f4;
+    --nok: #f44;
+    --flow: #4af;
+    --break: #f84;
+    --echo: #f4f;
+    --void: #666;
+    --root: #ffd700;
+    --border: #1a2a2a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Consolas', monospace;
+    padding: 16px;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 10px;
+  }
+
+  header {
+    border-bottom: 2px solid var(--axiom);
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  header h1 {
+    font-size: 18px;
+    background: linear-gradient(90deg, var(--axiom), var(--fg), var(--echo));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+  }
+  header .sub { color: #567; font-size: 10px; letter-spacing: 2px; }
+
+  .panel {
+    background: #05050a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+  }
+  .panel h2, .panel h3 {
+    color: var(--axiom);
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+
+  /* ── STATION‑MAP ── */
+  #stationBar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .station {
+    background: #0a0a12;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 4px;
+    text-align: center;
+    font-size: 9px;
+    cursor: default;
+    transition: 0.2s;
+  }
+  .station:hover { border-color: var(--axiom); }
+  .station .dim { color: var(--root); font-weight: bold; font-size: 12px; }
+  .station .name { color: var(--fg); }
+  .station .role { color: #567; font-size: 8px; }
+  .station.active { border-color: var(--ok); box-shadow: 0 0 8px rgba(80,255,80,0.15); }
+
+  /* ── MAIN GRID ── */
+  main { display: grid; grid-template-columns: 3fr 2fr; gap: 10px; min-height: 500px; }
+  @media (max-width: 950px) { main { grid-template-columns: 1fr; } }
+
+  #controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+  select, input[type=range], textarea, input[type=text] {
+    background: #001; color: var(--fg); border: 1px solid #034;
+    padding: 4px 6px; border-radius: 4px; font-family: inherit; font-size: 10px;
+  }
+  label { font-size: 10px; color: #789; }
+
+  button {
+    background: #111; color: var(--fg); border: 1px solid #333;
+    padding: 4px 10px; border-radius: 4px; cursor: pointer;
+    font-family: inherit; font-size: 9px; transition: 0.2s;
+  }
+  button:hover { background: #1a2a2a; border-color: var(--fg); }
+  button.primary { border-color: var(--axiom); color: var(--axiom); }
+  button.primary:hover { background: var(--axiom); color: #000; }
+
+  #grid {
+    display: grid;
+    gap: 3px;
+    margin-top: 6px;
+  }
+  .cell {
+    aspect-ratio: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 5px; cursor: pointer; user-select: none;
+    background: #0a0a12; border: 1px solid var(--border);
+    font-size: 8px; color: #6a8a8a; transition: 0.15s;
+    position: relative;
+  }
+  .cell:hover { border-color: var(--axiom); }
+  .cell .idx { font-size: 7px; color: #445; position:absolute; top:2px; left:3px; }
+  .cell .state-dot { width:6px; height:6px; border-radius:50%; margin-top:2px; }
+  .cell .score { font-size: 8px; color: var(--root); margin-top:1px; }
+
+  .state-OK    { background: var(--ok); }
+  .state-NOK   { background: var(--nok); }
+  .state-FLOW  { background: var(--flow); }
+  .state-BREAK { background: var(--break); }
+  .state-ECHO  { background: var(--echo); }
+  .state-VOID  { background: var(--void); }
+  .state-ROOT  { background: var(--root); }
+
+  /* ── DETAIL / LOG ── */
+  #detail-content { font-size: 10px; line-height: 1.5; }
+  #detail-content textarea { width: 100%; height: 60px; margin-top: 4px; }
+  .row { display: flex; gap: 6px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+
+  #topList { max-height: 160px; overflow-y: auto; font-size: 9px; margin-top: 6px; }
+  #topList .entry { padding: 3px 0; border-bottom: 1px solid var(--border); }
+
+  #log {
+    max-height: 130px; overflow-y: auto; font-size: 8px; color: #6a8a8a;
+    line-height: 1.4; background: #06060a; border-radius: 4px; padding: 4px 6px; margin-top: 8px;
+  }
+  #log .entry { padding: 1px 0; border-bottom: 1px solid #0a0a12; }
+  #log .time { color: #444; }
+  #log .ok { color: var(--ok); } #log .warn { color: var(--axiom); }
+  #log .info { color: var(--fg); } #log .err { color: var(--nok); }
+
+  #circleSVG { background: #000; border: 1px solid var(--border); border-radius: 8px; margin-top: 8px; }
+
+  #room-info { font-size: 9px; color: #789; margin-top: 6px; white-space: pre-wrap; background:#001; padding:6px; border-radius:4px; }
+
+  footer { color: #456; font-size: 9px; text-align: center; padding-top: 6px; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌀 3hoch3 · Response Layer 7 · Energie‑Matrix (27D)</h1>
+  <div class="sub">3D → 6D → 12D → 12D² → Dezimierung → Optimierung → 6E &nbsp;·&nbsp; iki1uc</div>
+</header>
+
+<!-- STATIONS-KARTE (aus ID.html / README) -->
+<div class="panel">
+  <h2>📡 Stationsmodell · 3‑6‑9‑12‑6E (gekrümmt)</h2>
+  <div id="stationBar"></div>
+  <div id="room-info"></div>
+</div>
+
+<main>
+  <!-- GRID / EVALUATOR -->
+  <div class="panel">
+    <h3>🧮 Respo‑Grid · QI/IQQ‑Evaluator</h3>
+    <div id="controls">
+      <label>Grid
+        <select id="levelSel">
+          <option value="1">3×3 (9)</option>
+          <option value="2">9×9 (81)</option>
+          <option value="3">27×27 (729)</option>
+        </select>
+      </label>
+      <label>QI <input id="qi" type="range" min="0" max="1" step="0.01" value="0.65"></label>
+      <label>IQQ <input id="iqq" type="range" min="0" max="1" step="0.01" value="0.35"></label>
+      <button id="genBtn" class="primary">▶ Erzeuge Grid</button>
+      <button id="autoFill">🎲 Auto‑Fill</button>
+      <button id="scoreAll">⚡ Scores</button>
+      <button id="exportBtn">💾 Export JSON</button>
+    </div>
+    <div id="grid"></div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="panel">
+    <h3>🔍 Details · THREEHOCH3</h3>
+    <div id="threehoch3-info" class="row"></div>
+
+    <div id="detail-content">Wähle eine Zelle im Grid, um Details zu sehen.</div>
+
+    <div>
+      <div style="font-size:9px;color:#567;margin-top:8px;">Top‑Respos (final_score)</div>
+      <div id="topList"></div>
+    </div>
+
+    <div style="font-size:9px;color:#567;margin-top:6px;">Multiskala‑Aggregation (φ‑Gewichte)</div>
+    <div id="multiscaleInfo" style="font-size:9px;color:#9f9;">—</div>
+
+    <svg id="circleSVG" width="100%" height="220" viewBox="0 0 320 220">
+      <g id="plot" transform="translate(160,110)"></g>
+    </svg>
+
+    <div id="log"></div>
+  </div>
+</main>
+
+<footer>3hoch3 · Energie‑Wurzelstation (27D) · nutzt QI/IQQ, φ‑Multiskala und Respo‑Zustände (OK/NOK/FLOW/BREAK/ECHO/VOID/ROOT) — © iki1uc wieimmer</footer>
+
+<script>
+// ============================================================
+// KONSTANTEN (aus 3hoch3.js, respo.js, README, PREFETCH_3)
+// ============================================================
+const PHI = (1 + Math.sqrt(5)) / 2;
+
+const THREEHOCH3 = {
+  station: "3hoch3", dim: 27, energy: true,
+  connect(){ return ["3x3", "9x9", "81"]; }
+};
+
+const ROOM = {
+  station: "3hoch3", value: 27, type: "energy-matrix",
+  links: { root: "ULTRA-NC3×3.room", tensor: "ULTRA-NC9×9.room", nc: "81.room" },
+  use: "6E-optimization"
+};
+
+const RESPO_STATES = {
+  OK:    { label: "OK",    role: "klare Zustimmung", factor: 1.1,  color: 'var(--ok)' },
+  NOK:   { label: "NOK",   role: "klare Ablehnung",  factor: 0.6,  color: 'var(--nok)' },
+  FLOW:  { label: "FLOW",  role: "System fließt",    factor: 1.15, color: 'var(--flow)' },
+  BREAK: { label: "BREAK", role: "System bricht",    factor: 0.5,  color: 'var(--break)' },
+  ECHO:  { label: "ECHO",  role: "Rückmeldung/Spiegel", factor: 1.0, color: 'var(--echo)' },
+  VOID:  { label: "VOID",  role: "Leere / Neutral",  factor: 0.3,  color: 'var(--void)' },
+  ROOT:  { label: "ROOT",  role: "Rückkehr z. Ursprung", factor: 1.2, color: 'var(--root)' }
+};
+
+const STATIONS = [
+  { dim: "3",   name: "Form",         modul: "axes.js" },
+  { dim: "3×3 (9)", name: "Wurzelraum", modul: "ULTRA-NC3×3.room" },
+  { dim: "3³ (27)", name: "Energie‑Matrix", modul: "3hoch3.room" },
+  { dim: "6",   name: "Dualform",     modul: "fusion9.js" },
+  { dim: "9",   name: "Tensor‑Wurzel", modul: "PRE9×9.math" },
+  { dim: "12",  name: "Tensor‑Quadrat", modul: "pipeline12.master.js" },
+  { dim: "6E",  name: "Energieform",  modul: "respo_bridge.js" }
+];
+
+const AXES = [
+  {name:'conceptual', keywords:['axiom','theory','idea','concept']},
+  {name:'technical', keywords:['code','implementation','api','function','module']},
+  {name:'repro', keywords:['example','reproduce','dataset','script','seed','steps']},
+  {name:'usability', keywords:['guide','readme','usage','install','ui']},
+  {name:'privacy', keywords:['email','pii','personal','secret','key','password']},
+  {name:'performance', keywords:['perf','speed','optimize','latency','scale']},
+  {name:'tests', keywords:['test','unit','assert','expected','verify']},
+  {name:'ethics', keywords:['ethic','bias','impact','safety']},
+  {name:'integration', keywords:['integrate','plugin','adapter','interop']}
+];
+
+function clamp(v,a=0,b=1){ return Math.max(a, Math.min(b, v)); }
+function mean(arr){ return arr.length ? arr.reduce((s,x)=>s+x,0)/arr.length : 0; }
+function phiWeights(nMax){
+  const ws = Array.from({length:nMax+1}, (_,n)=>Math.pow(1/PHI,n));
+  const s = ws.reduce((a,b)=>a+b,0);
+  return ws.map(w=>w/s);
+}
+function $(id){ return document.getElementById(id); }
+function escapeHtml(s){ return (s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+// ============================================================
+// LOG
+// ============================================================
+function log(msg, type='info'){
+  const logDiv = $('log');
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  const time = new Date().toLocaleTimeString();
+  entry.innerHTML = `<span class="time">[${time}]</span> <span class="${type}">${msg}</span>`;
+  logDiv.appendChild(entry);
+  logDiv.scrollTop = logDiv.scrollHeight;
+  while (logDiv.children.length > 60) logDiv.removeChild(logDiv.firstChild);
+}
+
+// ============================================================
+// EVAL / SCORING (arg, xarg, arg3te + Respo‑Zustand als Faktor)
+// ============================================================
+function evalRespo(confs, QI, IQQ){
+  const base = mean(confs);
+  const maxc = Math.max(...confs), minc = Math.min(...confs);
+  const variance = maxc - minc;
+  const combined = clamp(QI*base + (1 - IQQ)*maxc, 0, 1);
+  const arg = combined;
+  const xarg = variance;
+  const arg3te = Number((combined * (1 - xarg)).toFixed(6));
+  return { base, maxc, minc, variance, arg, xarg, arg3te };
+}
+
+function axisCoverage(text){
+  const t = (text||'').toLowerCase();
+  let matched = 0;
+  for(const a of AXES){
+    for(const k of a.keywords){ if(t.includes(k)){ matched++; break; } }
+  }
+  return matched / AXES.length;
+}
+
+function scoreRespo(respo, QI, IQQ){
+  const confs = respo.confs || [0.5,0.5,0.5];
+  const e = evalRespo(confs, QI, IQQ);
+  const axis = axisCoverage(respo.text || '');
+  const stateInfo = RESPO_STATES[respo.state] || RESPO_STATES.VOID;
+  const raw = 0.6 * e.arg3te + 0.4 * axis;
+  const final = Number(clamp(raw * stateInfo.factor, 0, 1).toFixed(6));
+  return Object.assign({}, respo, e, { axis_score: axis, final_score: final });
+}
+
+// ============================================================
+// STATIONS‑MAP RENDERN
+// ============================================================
+function renderStations(activeIdx = 2){
+  const bar = $('stationBar');
+  bar.innerHTML = '';
+  STATIONS.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'station' + (i === activeIdx ? ' active' : '');
+    div.innerHTML = `<div class="dim">${s.dim}</div><div class="name">${s.name}</div><div class="role">${s.modul}</div>`;
+    bar.appendChild(div);
+  });
+  $('room-info').textContent =
+`3hoch3.room → root: ${ROOM.links.root} | tensor: ${ROOM.links.tensor} | nc: ${ROOM.links.nc}
+THREEHOCH3.connect() → [${THREEHOCH3.connect().join(', ')}]  (dim=${THREEHOCH3.dim})`;
+}
+
+function renderThreehoch3Info(){
+  $('threehoch3-info').innerHTML =
+    `<span style="color:var(--root)">dim=${THREEHOCH3.dim}</span> · ` +
+    `<span style="color:var(--flow)">energy=${THREEHOCH3.energy}</span> · ` +
+    `<span style="color:var(--fg)">links: ${THREEHOCH3.connect().join(' → ')}</span>`;
+}
+
+// ============================================================
+// GRID / UI
+// ============================================================
+let state = { level:1, size:9, items:[], QI:0.65, IQQ:0.35, scored:null, multiscale:null };
+
+function gridSizeForLevel(level){
+  const side = Math.pow(3, level);
+  return { side, count: side * side };
+}
+
+function generateEmptyItems(level){
+  const info = gridSizeForLevel(level);
+  const items = [];
+  for(let i=0;i<info.count;i++){
+    items.push({ id:i, text:'', confs:[0.5,0.5,0.5], state:'VOID' });
+  }
+  return { items, side: info.side };
+}
+
+function buildGrid(level){
+  const { items, side } = generateEmptyItems(level);
+  state.level = level; state.size = items.length; state.items = items; state.scored = null;
+  renderGrid(side);
+  $('topList').innerHTML = '';
+  $('plot').innerHTML = '';
+  $('multiscaleInfo').textContent = 'keine Multiskala berechnet';
+  renderStations(Math.min(level, 2)); // Level 1→9D-Station, 2→27D, 3→27D (Grenze)
+  log(`▶ Grid erzeugt: ${side}×${side} (${items.length} Zellen)`, 'ok');
+}
+
+function renderGrid(side){
+  const gridEl = $('grid');
+  gridEl.innerHTML = '';
+  const cellPx = Math.max(18, Math.floor(560/side));
+  gridEl.style.gridTemplateColumns = `repeat(${side}, ${cellPx}px)`;
+  state.items.forEach((it, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.innerHTML = `<span class="idx">${idx+1}</span><span class="state-dot state-${it.state}"></span>`;
+    cell.title = `Zelle ${idx+1} · ${it.state}`;
+    cell.onclick = () => openEditor(idx);
+    gridEl.appendChild(cell);
+    it._el = cell;
+  });
+}
+
+function openEditor(idx){
+  const it = state.items[idx];
+  const stateOptions = Object.keys(RESPO_STATES).map(k =>
+    `<option value="${k}" ${it.state===k?'selected':''}>${k} — ${RESPO_STATES[k].role}</option>`
+  ).join('');
+
+  $('detail-content').innerHTML = `
+    <div><strong>Zelle ${idx+1}</strong></div>
+    <textarea id="editText" placeholder="Respo‑Text (Keywords steuern axis_score)">${escapeHtml(it.text)}</textarea>
+    <div class="row">
+      <label>Respo‑Zustand
+        <select id="editState">${stateOptions}</select>
+      </label>
+    </div>
+    <div class="row">
+      <label>c1 <input id="c1" type="range" min="0" max="1" step="0.01" value="${it.confs[0]}"></label>
+      <span id="c1v">${it.confs[0]}</span>
+    </div>
+    <div class="row">
+      <label>c2 <input id="c2" type="range" min="0" max="1" step="0.01" value="${it.confs[1]}"></label>
+      <span id="c2v">${it.confs[1]}</span>
+    </div>
+    <div class="row">
+      <label>c3 <input id="c3" type="range" min="0" max="1" step="0.01" value="${it.confs[2]}"></label>
+      <span id="c3v">${it.confs[2]}</span>
+    </div>
+    <div class="row">
+      <button id="saveCell" class="primary">Speichern</button>
+      <button id="clearCell">Leeren</button>
+      <button id="scoreCell">Score</button>
+    </div>
+  `;
+  $('c1').oninput = ()=> $('c1v').textContent = $('c1').value;
+  $('c2').oninput = ()=> $('c2v').textContent = $('c2').value;
+  $('c3').oninput = ()=> $('c3v').textContent = $('c3').value;
+
+  $('saveCell').onclick = ()=>{
+    it.text = $('editText').value.trim();
+    it.state = $('editState').value;
+    it.confs = [Number($('c1').value), Number($('c2').value), Number($('c3').value)];
+    it._el.querySelector('.state-dot').className = `state-dot state-${it.state}`;
+    log(`💾 Zelle ${idx+1} gespeichert (${it.state})`, 'ok');
+  };
+  $('clearCell').onclick = ()=>{
+    it.text=''; it.confs=[0.5,0.5,0.5]; it.state='VOID';
+    it._el.querySelector('.state-dot').className = 'state-dot state-VOID';
+    log(`⟲ Zelle ${idx+1} geleert`, 'warn');
+  };
+  $('scoreCell').onclick = ()=>{
+    const scored = scoreRespo(it, state.QI, state.IQQ);
+    $('detail-content').innerHTML =
+      `<div><strong>Score Zelle ${idx+1}</strong></div>
+       <pre style="background:#001;padding:8px;border-radius:6px;font-size:9px;">
+arg: ${scored.arg}
+xarg: ${scored.xarg}
+arg3te: ${scored.arg3te}
+axis: ${scored.axis_score.toFixed(3)}
+state: ${scored.state} (factor ${RESPO_STATES[scored.state].factor})
+final: ${scored.final_score}
+       </pre>`;
+    log(`⚡ Zelle ${idx+1} gescored: final=${scored.final_score}`, 'info');
+  };
+}
+
+// ============================================================
+// BATCH SCORING / TOP LIST / PLOT
+// ============================================================
+function scoreAll(){
+  state.QI = Number($('qi').value);
+  state.IQQ = Number($('iqq').value);
+  const scored = state.items.map((it, idx) => scoreRespo(Object.assign({}, it, {id: idx}), state.QI, state.IQQ));
+  state.scored = scored;
+  renderTopList();
+  renderPlot(scored.slice(0, Math.min(200, scored.length)));
+  computeMultiscale(scored);
+  scored.forEach((s, idx) => {
+    const el = state.items[idx]._el;
+    let scoreTag = el.querySelector('.score');
+    if(!scoreTag){ scoreTag = document.createElement('span'); scoreTag.className = 'score'; el.appendChild(scoreTag); }
+    scoreTag.textContent = s.final_score.toFixed(2);
+  });
+  log(`⚡ ${scored.length} Zellen gescored (QI=${state.QI}, IQQ=${state.IQQ})`, 'ok');
+}
+
+function renderTopList(){
+  if(!state.scored) return;
+  const sorted = [...state.scored].sort((a,b)=>b.final_score - a.final_score);
+  $('topList').innerHTML = sorted.slice(0,20).map(s => `
+    <div class="entry">
+      <strong>#${s.id+1}</strong> final=${s.final_score.toFixed(3)} · ${s.state}
+      <div style="color:#9aa">${escapeHtml((s.text||'').slice(0,80))}</div>
+    </div>`).join('');
+}
+
+function renderPlot(items){
+  const plotG = $('plot');
+  plotG.innerHTML = '';
+  const maxR = 95;
+  items.forEach(it => {
+    const angle = it.arg3te * Math.PI * 2;
+    const r = 15 + it.axis_score * maxR;
+    const x = Math.cos(angle) * r, y = Math.sin(angle) * r;
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', 5);
+    const stateColorMap = { OK:'#4f4', NOK:'#f44', FLOW:'#4af', BREAK:'#f84', ECHO:'#f4f', VOID:'#666', ROOT:'#ffd700' };
+    c.setAttribute('fill', stateColorMap[it.state] || '#444');
+    c.setAttribute('stroke', '#022');
+    c.addEventListener('mouseenter', ()=> {
+      c.setAttribute('r', 8);
+      $('detail-content').textContent = `#${it.id+1} final=${it.final_score.toFixed(3)} arg3te=${it.arg3te.toFixed(3)} state=${it.state}`;
+    });
+    c.addEventListener('mouseleave', ()=> c.setAttribute('r', 5));
+    plotG.appendChild(c);
+  });
+}
+
+function computeMultiscale(scored){
+  const L = state.level;
+  const levelScores = [];
+  for(let lvl=1; lvl<=L; lvl++){
+    const factor = Math.pow(3, state.level - lvl);
+    const groupMeans = {};
+    scored.forEach((s,i)=>{
+      const group = Math.floor(i / (factor*factor));
+      (groupMeans[group] = groupMeans[group] || []).push(s.final_score);
+    });
+    levelScores.push(mean(Object.values(groupMeans).map(mean)));
+  }
+  const ws = phiWeights(levelScores.length - 1);
+  const agg = levelScores.reduce((sum,val,i)=> sum + val*ws[i], 0);
+  $('multiscaleInfo').textContent = `Levels ${levelScores.map((v,i)=>`L${i+1}=${v.toFixed(3)}`).join(', ')} → aggregated=${agg.toFixed(4)}`;
+  state.multiscale = { levelScores, weights: ws, aggregated: agg };
+}
+
+// ============================================================
+// AUTO‑FILL / EXPORT
+// ============================================================
+function autoFillSample(){
+  const stateKeys = Object.keys(RESPO_STATES);
+  state.items.forEach((it, idx)=>{
+    it.text = `Respo ${idx+1} example ${idx%5===0?'test':''} ${idx%7===0?'api':''} ${idx%11===0?'axiom':''}`;
+    it.confs = [Number((0.4+Math.random()*0.6).toFixed(2)), Number((0.4+Math.random()*0.6).toFixed(2)), Number((0.4+Math.random()*0.6).toFixed(2))];
+    it.state = stateKeys[idx % stateKeys.length];
+    if(it._el) it._el.querySelector('.state-dot').className = `state-dot state-${it.state}`;
+  });
+  log('🎲 Auto‑Fill abgeschlossen', 'ok');
+}
+
+function exportJSON(){
+  const out = {
+    meta: { level: state.level, size: state.size, QI: state.QI, IQQ: state.IQQ, timestamp: Date.now() },
+    room: ROOM, threehoch3: { dim: THREEHOCH3.dim, links: THREEHOCH3.connect() },
+    items: state.items.map(({_el, ...rest}) => rest),
+    scored: state.scored, multiscale: state.multiscale
+  };
+  const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = '3hoch3_respos.json'; a.click();
+  URL.revokeObjectURL(url);
+  log('💾 Export als 3hoch3_respos.json', 'ok');
+}
+
+// ============================================================
+// EVENTS / INIT
+// ============================================================
+$('genBtn').addEventListener('click', ()=> buildGrid(Number($('levelSel').value)));
+$('autoFill').addEventListener('click', autoFillSample);
+$('scoreAll').addEventListener('click', scoreAll);
+$('exportBtn').addEventListener('click', exportJSON);
+$('qi').addEventListener('input', ()=> state.QI = Number($('qi').value));
+$('iqq').addEventListener('input', ()=> state.IQQ = Number($('iqq').value));
+
+renderThreehoch3Info();
+buildGrid(1);
+log('🌀 3hoch3 · Response Layer 7 geladen', 'ok');
+log('⚛️ THREEHOCH3.connect() → [' + THREEHOCH3.connect().join(', ') + ']', 'info');
+</script>
+
+</body>
+</html>
