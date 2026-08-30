@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DESAMALATZION · MASTER · ALLES</title>
+
+<style>
+body{background:#000;color:#0f0;font-family:Consolas,monospace;padding:20px}
+h1{text-align:center;font-size:24px;letter-spacing:4px;color:#6bffa9;margin-bottom:10px}
+nav{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+nav button{background:#0f0;color:#000;border:none;padding:6px 14px;font-weight:bold;cursor:pointer}
+nav button:hover{background:#0ff}
+.panel{border:1px solid #0f0;padding:12px;margin:12px 0;border-radius:6px;background:#0a0a0a}
+pre{white-space:pre-wrap;font-size:12px;line-height:1.4}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.cell{padding:10px;border-radius:6px;text-align:center;font-size:12px}
+.holo{font-size:14px;line-height:1.2;text-align:center;white-space:pre}
+</style>
+</head>
+<body>
+
+<h1>⚡ DESAMALATZION · MASTER</h1>
+
+<nav>
+    <button onclick="showSection('live')">LIVE+</button>
+    <button onclick="showSection('holo')">HOLO</button>
+    <button onclick="showSection('grid')">GRID</button>
+    <button onclick="showSection('dispatcher')">DISPATCHER</button>
+    <button onclick="showSection('nano')">NANO</button>
+</nav>
+
+<!-- LIVE+ -->
+<div id="live" class="panel">
+    <h3>LIVE+ · Kernel Heatmap</h3>
+    ETAGE: <input id="liveEtage" type="number" value="81">
+    WERT: <input id="liveWert" type="number" value="81">
+    <button onclick="runLive()">▶ RUN</button>
+    <div id="heatmap" class="grid"></div>
+</div>
+
+<!-- HOLO -->
+<div id="holo" class="panel" style="display:none">
+    <h3>HOLO · Axiom‑Orbit‑Raum</h3>
+    AXIOM:
+    <select id="holoAxiom">
+        <option>d</option><option selected>e</option><option>i</option>
+        <option>n</option><option>o</option><option>r</option>
+        <option>s</option><option>w</option><option>u</option>
+    </select>
+    <button onclick="runHolo()">▶ HOLO</button>
+    <pre id="holoOut" class="holo"></pre>
+</div>
+
+<!-- GRID -->
+<div id="grid" class="panel" style="display:none">
+    <h3>GRID · 3×3×3 Kernel‑Cube</h3>
+    WERT: <input id="gridWert" type="number" value="81">
+    <button onclick="runGrid()">▶ GRID</button>
+    <div id="cube" class="grid"></div>
+</div>
+
+<!-- DISPATCHER -->
+<div id="dispatcher" class="panel" style="display:none">
+    <h3>DISPATCHER · RUN</h3>
+    X: <input id="dx" type="number" value="3">
+    Y: <input id="dy" type="number" value="9">
+    Z: <input id="dz" type="number" value="27">
+    <button onclick="runDispatcher()">▶ RUN</button>
+    <pre id="dispatcherOut"></pre>
+</div>
+
+<!-- NANO -->
+<div id="nano" class="panel" style="display:none">
+    <h3>NANO · System</h3>
+    <a href="nano-in.html" target="_blank"><button>📥 NANO‑IN</button></a>
+    <a href="nano-out.html" target="_blank"><button>📤 NANO‑OUT</button></a>
+</div>
+
+<script type="module">
+import { RIR } from "./RIR.Core.js";
+import { BLITZ_RUN3 } from "./pipeline.blitz.run3.js";
+import { RUN_WORK } from "./RUN.work.js";
+
+const AXIOME={
+    d:"◇",e:"⚡",i:"◆",n:"📖",o:"◎",r:"▣",s:"⬡",w:"〜",u:"🌌"
+};
+
+const KERNEL={
+    etagen:[3,9,27,81,729],
+    trennung(v,e){
+        const q=Math.floor(v/e);
+        return{geteilt:v/e,mod:v%e,quotient:q,rest:v-q*e};
+    },
+    run(v){
+        const r={};
+        this.etagen.forEach(e=>r[e]=this.trennung(v,e));
+        return r;
+    }
+};
+
+function showSection(id){
+    ["live","holo","grid","dispatcher","nano"].forEach(s=>{
+        document.getElementById(s).style.display = s===id ? "block" : "none";
+    });
+}
+
+/* LIVE+ */
+function color(v){
+    const n=Math.min(255,Math.floor(v*12));
+    return `rgb(${n},50,50)`;
+}
+function runLive(){
+    const etage=Number(document.getElementById("liveEtage").value);
+    const wert=Number(document.getElementById("liveWert").value);
+    const kernel=KERNEL.run(wert);
+    const map=document.getElementById("heatmap");
+    map.innerHTML="";
+    Object.keys(kernel).forEach(e=>{
+        const c=document.createElement("div");
+        c.className="cell";
+        c.style.background=color(kernel[e].geteilt);
+        c.textContent=`${e}\n${kernel[e].geteilt.toFixed(2)}`;
+        map.appendChild(c);
+    });
+}
+
+/* HOLO */
+function holoFrame(sym,rot){
+return `
+${" ".repeat(rot)}${sym}
+${" ".repeat(rot-2)} /|\\
+${" ".repeat(rot-3)} / | \\
+${" ".repeat(rot-4)} /  |  \\
+${" ".repeat(rot-5)} *--+--*
+${" ".repeat(rot-4)} \\  |  /
+${" ".repeat(rot-3)} \\ | /
+${" ".repeat(rot-2)} \\|/
+${" ".repeat(rot)}${sym}
+`;
+}
+function runHolo(){
+    const key=document.getElementById("holoAxiom").value;
+    const sym=AXIOME[key];
+    let rot=12;
+    const holo=document.getElementById("holoOut");
+    holo.textContent=holoFrame(sym,rot);
+    setInterval(()=>{
+        rot=(rot+1)%12;
+        holo.textContent=holoFrame(sym,rot);
+    },120);
+}
+
+/* GRID */
+function runGrid(){
+    const wert=Number(document.getElementById("gridWert").value);
+    const cube=document.getElementById("cube");
+    cube.innerHTML="";
+    KERNEL.etagen.slice(0,3).forEach(e=>{
+        for(let i=0;i<9;i++){
+            const r=KERNEL.trennung(wert+i,e);
+            const c=document.createElement("div");
+            c.className="cell";
+            c.textContent=`${e}\n${r.geteilt.toFixed(2)}`;
+            cube.appendChild(c);
+        }
+    });
+}
+
+/* DISPATCHER */
+function runDispatcher(){
+    const x=Number(document.getElementById("dx").value);
+    const y=Number(document.getElementById("dy").value);
+    const z=Number(document.getElementById("dz").value);
+    const out=document.getElementById("dispatcherOut");
+
+    const rir=RIR.return({x,y,z});
+    const blitz=BLITZ_RUN3(x);
+    const work=RUN_WORK(x);
+
+    out.textContent=JSON.stringify({rir,blitz,work},null,2);
+}
+</script>
+
+</body>
+</html>
