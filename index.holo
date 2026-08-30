@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>DESAMALATZION · HOLO</title>
+<style>
+body{background:#000;color:#0f0;font-family:Consolas;padding:20px}
+h1{text-align:center;color:#66ccff;letter-spacing:4px}
+pre{font-size:14px;line-height:1.2;text-align:center}
+</style>
+</head>
+<body>
+
+<h1>HOLO · Axiom‑Orbit‑Raum</h1>
+
+<div>
+    AXIOM:
+    <select id="axiom">
+        <option>d</option><option selected>e</option><option>i</option>
+        <option>n</option><option>o</option><option>r</option>
+        <option>s</option><option>w</option><option>u</option>
+    </select>
+    <button onclick="run()">▶ HOLO</button>
+</div>
+
+<pre id="holo"></pre>
+
+<script type="module">
+const AXIOME={
+    d:"◇",e:"⚡",i:"◆",n:"📖",o:"◎",r:"▣",s:"⬡",w:"〜",u:"🌌"
+};
+
+function holoFrame(sym,rot){
+    return `
+        ${" ".repeat(rot)}${sym}
+       ${" ".repeat(rot-2)} /|\\
+      ${" ".repeat(rot-3)} / | \\
+     ${" ".repeat(rot-4)} /  |  \\
+    ${" ".repeat(rot-5)} *--+--*
+     ${" ".repeat(rot-4)} \\  |  /
+      ${" ".repeat(rot-3)} \\ | /
+       ${" ".repeat(rot-2)} \\|/
+        ${" ".repeat(rot)}${sym}
+    `;
+}
+
+function run(){
+    const key=document.getElementById("axiom").value;
+    const sym=AXIOME[key];
+    let rot=12;
+
+    const holo=document.getElementById("holo");
+    holo.textContent=holoFrame(sym,rot);
+
+    setInterval(()=>{
+        rot=(rot+1)%12;
+        holo.textContent=holoFrame(sym,rot);
+    },120);
+}
+
+run();
+</script>
+</body>
+</html>
