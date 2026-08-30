@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DESAMALATZION · LIVE · Kernel + Axiome</title>
+
+<style>
+body{background:#000;color:#0f0;font-family:Consolas,monospace;padding:20px}
+h1{text-align:center;font-size:22px;letter-spacing:4px;color:#6bffa9}
+.panel{border:1px solid #0f0;padding:12px;margin:12px 0;border-radius:6px;background:#0a0a0a}
+pre{white-space:pre-wrap;font-size:12px;line-height:1.4}
+.flex{display:flex;gap:10px;align-items:center}
+.live{color:#00ccff}
+.ax{color:#ffd700}
+.kern{color:#6bffa9}
+.err{color:#ff6b8a}
+</style>
+</head>
+<body>
+
+<h1>⚡ DESAMALATZION · LIVE</h1>
+
+<div class="panel">
+    <h3>📡 LIVE · INPUT</h3>
+    <div class="flex">
+        <label>ETAGE:</label>
+        <select id="etage">
+            <option value="3">3</option>
+            <option value="9">9</option>
+            <option value="27">27</option>
+            <option value="81" selected>81</option>
+            <option value="729">729</option>
+        </select>
+
+        <label>WERT:</label>
+        <input id="wert" type="number" value="81">
+
+        <label>AXIOM:</label>
+        <select id="axiom">
+            <option value="d">d</option>
+            <option value="e" selected>e</option>
+            <option value="i">i</option>
+            <option value="n">n</option>
+            <option value="o">o</option>
+            <option value="r">r</option>
+            <option value="s">s</option>
+            <option value="w">w</option>
+            <option value="u">u</option>
+        </select>
+
+        <button onclick="runLive()">▶ LIVE</button>
+    </div>
+</div>
+
+<div class="panel">
+    <h3>🔷 LIVE · KERNEL</h3>
+    <pre id="kernelOut" class="kern">⏳ Kernel wartet...</pre>
+</div>
+
+<div class="panel">
+    <h3>🌌 LIVE · AXIOM</h3>
+    <pre id="axiomOut" class="ax">⏳ Axiom wartet...</pre>
+</div>
+
+<div class="panel">
+    <h3>⚡ LIVE · VECTOR</h3>
+    <pre id="vectorOut" class="live">⏳ Vector wartet...</pre>
+</div>
+
+<div class="panel">
+    <h3>📡 LIVE · RIR</h3>
+    <pre id="rirOut">⏳ RIR wartet...</pre>
+</div>
+
+<script type="module">
+import { LICENSE } from "./LICENSE-CHECK.js";
+import { RIR } from "./RIR.Core.js";
+import { BLITZ_RUN3 } from "./pipeline.blitz.run3.js";
+import { RUN_WORK } from "./RUN.work.js";
+
+const AXIOME = {
+    d:{label:"Dimension",symbol:"◇",vector:1.11},
+    e:{label:"Energie",symbol:"⚡",vector:1.33},
+    i:{label:"Identität",symbol:"◆",vector:0.77},
+    n:{label:"Narrativ",symbol:"📖",vector:0.92},
+    o:{label:"Orbit",symbol:"◎",vector:1.44},
+    r:{label:"Raum",symbol:"▣",vector:1.66},
+    s:{label:"System",symbol:"⬡",vector:1.21},
+    w:{label:"Welle",symbol:"〜",vector:1.55},
+    u:{label:"Universum",symbol:"🌌",vector:2.0}
+};
+
+const KERNEL = {
+    etagen:[3,9,27,81,729],
+    trennung(v,e){
+        const q=Math.floor(v/e);
+        return{geteilt:v/e,mod:v%e,quotient:q,rest:v-q*e};
+    },
+    run(v){
+        const r={};
+        this.etagen.forEach(e=>r[e]=this.trennung(v,e));
+        return r;
+    }
+};
+
+function runLive(){
+    const etage = Number(document.getElementById("etage").value);
+    const wert = Number(document.getElementById("wert").value);
+    const axiomKey = document.getElementById("axiom").value;
+    const axiom = AXIOME[axiomKey];
+
+    // Kernel
+    const kernel = KERNEL.run(wert);
+    document.getElementById("kernelOut").textContent =
+        JSON.stringify(kernel,null,2);
+
+    // Axiom
+    document.getElementById("axiomOut").textContent =
+        `${axiom.symbol} ${axiom.label}\nVECTOR: ${axiom.vector}`;
+
+    // Vector
+    const dir = etage * axiom.vector;
+    const mag = Math.sqrt(etage * axiom.vector * 7.29);
+    const flow = (etage * axiom.vector * 3.33).toFixed(2);
+    const transformed = Math.round((wert * dir + mag)*100)/100;
+
+    document.getElementById("vectorOut").textContent =
+        `DIR: ${dir}\nMAG: ${mag}\nFLOW: ${flow}\nTRANSFORM: ${transformed}`;
+
+    // RIR
+    const rir = RIR.return({x:wert,y:wert+3,z:wert+9});
+    document.getElementById("rirOut").textContent =
+        JSON.stringify(rir,null,2);
+}
+
+// Auto‑Start
+runLive();
+</script>
+
+</body>
+</html>
