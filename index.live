@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>DESAMALATZION · LIVE+ · Heatmap</title>
+<style>
+body{background:#000;color:#0f0;font-family:Consolas;padding:20px}
+h1{text-align:center;color:#6bffa9;letter-spacing:4px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:20px}
+.cell{padding:10px;border-radius:6px;text-align:center;font-size:12px}
+</style>
+</head>
+<body>
+
+<h1>LIVE+ · Kernel Heatmap</h1>
+
+<div>
+    ETAGE: <input id="etage" type="number" value="81">
+    WERT: <input id="wert" type="number" value="81">
+    <button onclick="run()">▶ LIVE+</button>
+</div>
+
+<div id="heatmap" class="grid"></div>
+
+<script type="module">
+import { RIR } from "./RIR.Core.js";
+
+const KERNEL = {
+    etagen:[3,9,27,81,729],
+    trennung(v,e){
+        const q=Math.floor(v/e);
+        return{geteilt:v/e,mod:v%e,quotient:q,rest:v-q*e};
+    },
+    run(v){
+        const r={};
+        this.etagen.forEach(e=>r[e]=this.trennung(v,e));
+        return r;
+    }
+};
+
+function color(v){
+    const n=Math.min(255,Math.floor(v*12));
+    return `rgb(${n},${50},${50})`;
+}
+
+function run(){
+    const etage=Number(document.getElementById("etage").value);
+    const wert=Number(document.getElementById("wert").value);
+
+    const kernel=KERNEL.run(wert);
+    const map=document.getElementById("heatmap");
+    map.innerHTML="";
+
+    Object.keys(kernel).forEach(e=>{
+        const c=document.createElement("div");
+        c.className="cell";
+        c.style.background=color(kernel[e].geteilt);
+        c.textContent=`${e}\n${kernel[e].geteilt.toFixed(2)}`;
+        map.appendChild(c);
+    });
+}
+
+run();
+</script>
+</body>
+</html>
