@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>DESAMALATZION · GRID · 3×3×3</title>
+<style>
+body{background:#000;color:#0f0;font-family:Consolas;padding:20px}
+h1{text-align:center;color:#ff66ff;letter-spacing:4px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:20px}
+.cell{padding:10px;border:1px solid #333;border-radius:6px;text-align:center;font-size:12px}
+</style>
+</head>
+<body>
+
+<h1>GRID · 3×3×3 Kernel‑Cube</h1>
+
+<div>
+    WERT: <input id="wert" type="number" value="81">
+    <button onclick="run()">▶ GRID</button>
+</div>
+
+<div id="cube"></div>
+
+<script type="module">
+const KERNEL={
+    etagen:[3,9,27],
+    trennung(v,e){
+        const q=Math.floor(v/e);
+        return{geteilt:v/e,mod:v%e,quotient:q,rest:v-q*e};
+    }
+};
+
+function run(){
+    const wert=Number(document.getElementById("wert").value);
+    const cube=document.getElementById("cube");
+    cube.innerHTML="";
+    cube.className="grid";
+
+    KERNEL.etagen.forEach(e=>{
+        for(let i=0;i<9;i++){
+            const r=KERNEL.trennung(wert+i,e);
+            const c=document.createElement("div");
+            c.className="cell";
+            c.textContent=`${e}\n${r.geteilt.toFixed(2)}`;
+            cube.appendChild(c);
+        }
+    });
+}
+
+run();
+</script>
+</body>
+</html>
