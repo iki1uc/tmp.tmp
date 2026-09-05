@@ -1,334 +1,801 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DISpatcher · KERNEL · ALLE MODULE</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ AXIOMROOT · OS · BIOS · AXIOM · ALLE WELTEN</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0a0a12;
+      color: #d0d8e0;
+      font-family: 'Consolas', 'Courier New', monospace;
+      padding: 12px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background-image: radial-gradient(ellipse at 20% 30%, #0d1a2a, #050608);
+    }
+    .wrap { max-width: 1400px; width: 100%; }
 
-<style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#0a0a12;color:#d0d9e6;font-family:Consolas,monospace;padding:16px;min-height:100vh}
-    h1{text-align:center;letter-spacing:6px;margin-bottom:4px;background:linear-gradient(90deg,#ffd700,#00ccff,#ff66ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:300;font-size:26px}
-    h1 small{font-size:11px;display:block;color:#3d5a70;-webkit-text-fill-color:#3d5a70;letter-spacing:3px}
-    .panel{background:rgba(255,255,255,0.04);padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid rgba(0,200,255,0.06)}
-    .panel h3{font-size:10px;color:#3d5a70;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase}
-    .flex{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}
-    input,select{background:#000;color:#0f0;border:1px solid #1a3a3a;padding:3px 6px;font-family:monospace;border-radius:3px;font-size:10px}
-    input{width:60px}
-    select{width:80px}
-    button{background:#0f0;color:#000;border:none;padding:4px 12px;font-weight:bold;cursor:pointer;font-family:monospace;border-radius:3px;font-size:10px}
-    button:hover{background:#0ff}
-    button.sec{background:transparent;color:#0f0;border:1px solid #0f0}
-    button.sec:hover{background:#0f0;color:#000}
-    pre{background:rgba(0,0,0,0.3);padding:10px;border-radius:6px;border:1px solid rgba(0,200,255,0.04);overflow-x:auto;font-size:10px;line-height:1.4;white-space:pre-wrap;color:#8ab4c8;margin:4px 0}
-    .ok{color:#6bffa9}
-    .err{color:#ff6b8a}
-    .warn{color:#ffd700}
-    .info{color:#66ccff}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media(max-width:700px){.grid2{grid-template-columns:1fr}}
-    .badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:8px;margin-right:4px}
-    .badge.ok{background:#0a2a1a;color:#6bffa9}
-    .badge.err{background:#2a0a0a;color:#ff6b8a}
-    .badge.warn{background:#2a1a0a;color:#ffd700}
-    a{color:#66ccff;text-decoration:none}
-    a:hover{color:#0ff;text-decoration:underline}
-    .id-block{color:#ffd700;font-size:11px;white-space:pre-wrap}
-</style>
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #ffd700;
+    }
+    header h1 {
+      font-size: 26px;
+      font-weight: 300;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #ffd700, #00e5ff, #ff66ff, #b388ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    header .badge {
+      font-size: 13px;
+      background: #101820;
+      padding: 4px 16px;
+      border-radius: 30px;
+      border: 1px solid #2a3a4a;
+      color: #8a9aaa;
+    }
+    .badge .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: pulse 1.2s infinite;
+    }
+    .dot-on { background: #00ff88; box-shadow: 0 0 10px #00ff8866; }
+    .dot-off { background: #445555; }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 1100px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 700px) { .grid-3 { grid-template-columns: 1fr; } }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 820px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .card {
+      background: #0e141c;
+      border: 1px solid #1a2230;
+      border-radius: 12px;
+      padding: 14px;
+      transition: border-color 0.3s;
+    }
+    .card h2 {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: #5a6a7a;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #16202a;
+      padding-bottom: 4px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      border-bottom: 1px solid #0e1620;
+      font-size: 12px;
+    }
+    .row:last-child { border-bottom: none; }
+    .row .label { color: #5a6a7a; }
+    .row .value { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 6px 0;
+    }
+    button {
+      background: #141e28;
+      color: #d0d8e0;
+      border: 1px solid #2a3a4a;
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover { background: #1e2a36; border-color: #4a5a6a; }
+    button.primary { border-color: #ffd700; color: #ffd700; }
+    button.primary:hover { background: #ffd70022; }
+    button.secondary { border-color: #4a7a9a; color: #6ec8ff; }
+    button.secondary:hover { background: #0a2a3a; }
+    button.danger { border-color: #ff6b6b; color: #ff6b6b; }
+    button.danger:hover { background: #2a0a0a; }
+    button.magneto { border-color: #ff00ff; color: #ff00ff; }
+    button.magneto:hover { background: #ff00ff22; }
+    button.vital { border-color: #00ff88; color: #00ff88; }
+    button.vital:hover { background: #00ff8822; }
+    button.bootlink { border-color: #6ec8ff; color: #6ec8ff; }
+    button.bootlink:hover { background: #6ec8ff22; }
+    button.module-tab.active { background: rgba(80,200,255,0.18); border-color: #80c0e0; color: #d0e8f8; }
+
+    canvas {
+      width: 100%;
+      max-width: 420px;
+      display: block;
+      margin: 6px auto;
+      background: #0a0e14;
+      border: 1px solid #16202a;
+      border-radius: 10px;
+    }
+
+    .energy-bar {
+      background: #080c12;
+      border-radius: 6px;
+      height: 6px;
+      margin: 4px 0;
+      overflow: hidden;
+      border: 1px solid #16202a;
+    }
+    .energy-bar .fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff6b6b, #ffd700, #00ff88, #b388ff);
+      transition: width 0.3s ease;
+    }
+
+    .pfad-visual {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin: 4px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3a4a5a;
+    }
+    .pfad-visual .active {
+      color: #ffd700;
+      text-shadow: 0 0 16px #ffd70044;
+    }
+    .pfad-visual .sep { color: #1a2230; }
+
+    /* FIX: mehrzeilige Log-Einträge (showAnime/showShuffle nutzen \n)
+       wurden ohne pre-wrap zu einer einzigen Zeile zusammengequetscht. */
+    .log {
+      height: 160px;
+      overflow-y: auto;
+      background: #080c12;
+      border: 1px solid #16202a;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 10px;
+      line-height: 1.5;
+      color: #5a6a7a;
+      white-space: pre-wrap;
+    }
+    .log .entry { padding: 1px 0; border-bottom: 1px solid #0e141c; }
+    .log .time { color: #2a3a4a; }
+    .log .msg { color: #b0b8c0; }
+    .log .msg.highlight { color: #ffd700; }
+    .log .msg.vital { color: #00ff88; }
+    .log .msg.magneto { color: #ff00ff; }
+    .log .msg.bootlink { color: #6ec8ff; }
+    .log .msg.admin0 { color: #ff6b6b; }
+    .log .msg.orbit { color: #6b6bff; }
+    .log .msg.suite { color: #ff66ff; }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .metric {
+      background: #0e0e1a;
+      border: 1px solid #1a1a2a;
+      border-radius: 4px;
+      padding: 4px;
+      text-align: center;
+    }
+    .metric .label { color: #666; font-size: 7px; text-transform: uppercase; }
+    .metric .value { font-size: 14px; font-weight: bold; }
+    .metric.vital .value { color: #00ff88; }
+    .metric.bootlink .value { color: #6ec8ff; }
+    .metric.magneto .value { color: #ff00ff; }
+    .metric.orbit .value { color: #6b6bff; }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 12px;
+      padding: 6px 12px;
+      background: #0e141c;
+      border-radius: 10px;
+      border: 1px solid #16202a;
+      font-size: 11px;
+      color: #5a6a7a;
+    }
+    .footer .stat { display: flex; align-items: center; gap: 4px; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #080c12; }
+    ::-webkit-scrollbar-thumb { background: #16202a; border-radius: 4px; }
+
+    .krümmung-bar {
+      background: #0e0e1a;
+      border: 1px solid #1a1a2a;
+      border-radius: 4px;
+      padding: 4px 8px;
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9px;
+      color: #666;
+    }
+    .krümmung-bar .wert {
+      color: #00ffff;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .krümmung-bar .label { color: #ffd700; }
+
+    .anime-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 2px;
+      margin: 4px 0;
+    }
+    .anime-frame {
+      background: #0e0e1a;
+      border: 1px solid #1a1a2a;
+      border-radius: 2px;
+      padding: 2px;
+      text-align: center;
+      font-size: 6px;
+      color: #666;
+    }
+    .anime-frame .id { color: #ffd700; font-weight: bold; }
+    .anime-frame .vital { color: #00ff88; font-size: 8px; }
+    .anime-frame.active { border-color: #ff66ff; background: rgba(255,102,255,0.05); }
+  </style>
 </head>
 <body>
 
-<h1>⚡ DISpatcher</h1>
-<h1 style="font-size:13px;margin-top:-4px;background:none;-webkit-text-fill-color:#3d5a70;color:#3d5a70;letter-spacing:4px;font-weight:400">KERNEL · PQ · RAM · ROM · RUN · API · MARKT · RAW</h1>
+<div class="wrap">
 
-<div class="panel" style="border-color:#ffd700;background:rgba(255,215,0,0.04)">
-    <pre class="id-block" id="idBlock">
-╔═══════════════════════════════════════════════════════════╗
-║  ID.MODE     = DISPATCHER                               ║
-║  ID.CORE     = 243                                      ║
-║  ID.ROLE     = PQ‑Root                                  ║
-║  ID.STATE    = verbunden                                ║
-║  ID.RUNTIME  = RIR + DQF + XyX + 243 + KIT             ║
-║  ID.WHIRL    = WHIRL_PQ                                 ║
-╚═══════════════════════════════════════════════════════════╝
-    </pre>
-</div>
+  <header>
+    <h1>⚡ AXIOMROOT · OS · BIOS · AXIOM · ALLE WELTEN</h1>
+    <div class="badge">
+      <span class="dot dot-on" id="bootDot"></span>
+      <span id="bootStatus">AKTIV</span>
+    </div>
+  </header>
 
-<div id="licenseDisplay" class="panel" style="border-color:#ffd700;background:rgba(255,215,0,0.04)">
-    <pre style="color:#ffd700;font-size:9px">⏳ Lizenz wird geprüft...</pre>
-</div>
+  <div class="grid-3">
 
-<div class="grid2">
-
-    <!-- Linke Spalte -->
-    <div>
-        <div class="panel">
-            <h3>🎯 EINGABE · RUN</h3>
-            <div class="flex">
-                <label>X:</label><input id="x" type="number" value="3">
-                <label>Y:</label><input id="y" type="number" value="9">
-                <label>Z:</label><input id="z" type="number" value="27">
-            </div>
-            <div class="flex">
-                <label>ETAGE:</label>
-                <select id="etageSelect">
-                    <option value="3">3 · UR</option>
-                    <option value="9">9 · KERN</option>
-                    <option value="27">27 · ORBIT</option>
-                    <option value="81" selected>81 · RAUM</option>
-                    <option value="243">243 · KANAL</option>
-                    <option value="729">729 · LEBEN</option>
-                </select>
-                <label>WERT:</label>
-                <input id="wertInput" type="number" value="81">
-                <label>AXIOM:</label>
-                <select id="axiomSelect">
-                    <option value="d">d</option><option value="e" selected>e</option>
-                    <option value="i">i</option><option value="n">n</option>
-                    <option value="o">o</option><option value="r">r</option>
-                    <option value="s">s</option><option value="w">w</option>
-                    <option value="u">u</option>
-                </select>
-                <button onclick="runAll()">▶ RUN</button>
-                <button class="sec" onclick="resetAll()">⟲</button>
-                <button class="sec" onclick="swapAll()">🔄</button>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h3>📦 MODULE · STATUS</h3>
-            <div id="moduleStatus">
-                <pre style="color:#0a0">⏳ Module werden geladen...</pre>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h3>🔗 SYSTEM · LINKS</h3>
-            <div class="flex">
-                <a href="autorun.html" target="_blank"><button style="background:#66ccff;color:#000">⚡ AUTORUN</button></a>
-                <a href="stage.html" target="_blank"><button style="background:#6bffa9;color:#000">🎯 STAGE</button></a>
-                <a href="kernel.js" target="_blank"><button class="sec">🧠 KERNEL</button></a>
-            </div>
-        </div>
+    <div class="card">
+      <h2>🌀 PFAD · 81→9→3→9→81 · ORBIT</h2>
+      <canvas id="orbitCanvas" width="420" height="420"></canvas>
+      <div style="font-size:10px; color:#5a6a7a; text-align:center; margin-top:2px;">
+        <span id="orbitLegend">● STAGE · PFAD 81</span>
+      </div>
+      <div class="pfad-visual" id="pfadVisual">
+        <span class="active" id="p0">81</span><span class="sep">→</span>
+        <span id="p1">9</span><span class="sep">→</span>
+        <span id="p2">3</span><span class="sep">→</span>
+        <span id="p3">9</span><span class="sep">→</span>
+        <span id="p4">81</span>
+      </div>
+      <div class="energy-bar"><div class="fill" id="energyFill"></div></div>
+      <div class="row"><span class="label">Aktuell</span><span class="value" id="a81Display">81</span></div>
+      <div class="row"><span class="label">Pfad‑Index</span><span class="value" id="pathIndexDisplay">0</span></div>
+      <div class="row"><span class="label">Zahnrad</span><span class="value" id="gearDisplay">0</span></div>
+      <div class="row"><span class="label">Modus</span><span class="value" id="modeDisplay" style="color:#6ec8ff;">STAGE</span></div>
+      <div class="btn-row">
+        <button class="primary" id="btnStep">▶ Step</button>
+        <button id="btnLoop">▶ Loop</button>
+        <button id="btnStop">⏹ Stop</button>
+        <button id="btnOmni" style="border-color:#b388ff;color:#b388ff;">🌀 OMNI</button>
+        <button class="danger" id="btnReset">⟲ Reset</button>
+      </div>
     </div>
 
-    <!-- Rechte Spalte -->
-    <div>
-        <div class="panel">
-            <h3>📊 AUSGABE · RESULT</h3>
-            <div id="output">
-                <pre style="color:#0a0">⏳ Warte auf RUN...</pre>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h3>🔷 KERNEL · ALLE ETAGEN</h3>
-            <div id="kernelOutput">
-                <pre style="color:#444">⏳ Kernel wartet...</pre>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h3>🌀 XyX · AIR/AIV</h3>
-            <div id="xyxOutput">
-                <pre style="color:#444">⏳ XyX wartet...</pre>
-            </div>
-        </div>
+    <div class="card">
+      <h2>🧠 ENGINE · KERN · MOVES · AXIOME</h2>
+      <div class="row"><span class="label">pump (Energie)</span><span class="value" id="pumpDisplay">0</span></div>
+      <div class="row"><span class="label">Formel A (pump/6)</span><span class="value" id="formADisplay">0.00</span></div>
+      <div class="row"><span class="label">Formel B (pump/8)</span><span class="value" id="formBDisplay">0.00</span></div>
+      <div class="row"><span class="label">hits (A>0)</span><span class="value" id="hitsDisplay">0</span></div>
+      <div class="btn-row">
+        <button class="primary" id="btnPredictive">▶ predictiveEngine()</button>
+        <button class="danger" id="btnResetEngine">⟲ Reset Engine</button>
+      </div>
+      <div style="font-size:10px; color:#5a6a7a; margin:4px 0;">USER‑Impuls: Level 6 + active = <span id="userImpulseDisplay" style="color:#ffd700;">7</span></div>
+      <div class="btn-row">
+        <button class="secondary" data-move="OI">OI</button>
+        <button class="secondary" data-move="IO">IO</button>
+        <button class="secondary" data-move="XI">XI</button>
+        <button class="secondary" data-move="IX">IX</button>
+      </div>
+      <div class="row"><span class="label">letzter Move</span><span class="value" id="lastMoveDisplay" style="color:#ffd700;">—</span></div>
+      <div class="row"><span class="label">Achse</span><span class="value" id="axleDisplay">neutral</span></div>
+      <div class="btn-row">
+        <button id="btnToggleAxle">↕ toggleAxle()</button>
+        <button id="btnDoor">🚪 DOOR</button>
+        <button id="btnDoo">◈ DOO</button>
+        <button id="btnRir" class="secondary">🛡 RIR</button>
+        <button id="btnXyx" class="secondary">🌀 XyX</button>
+      </div>
     </div>
+
+    <div class="card">
+      <h2>🧲 MAGNETO · RAWATOR · KRÜMMUNG</h2>
+      <div class="metric-grid">
+        <div class="metric vital"><div class="label">🌀 VITAL</div><div class="value" id="vital-value">0.00</div></div>
+        <div class="metric magneto"><div class="label">🧲 MAGNETO</div><div class="value" id="magneto-value">0.00</div></div>
+        <div class="metric orbit"><div class="label">🔄 ORBIT</div><div class="value" id="orbit-wert">0.00</div></div>
+        <div class="metric"><div class="label">🎭 SUITE</div><div class="value" id="suite-wert">0.00</div></div>
+      </div>
+      <div class="row"><span class="label">Commander</span><span class="value" id="commander-wert">0.00</span></div>
+      <div class="row"><span class="label">Admin0</span><span class="value" id="admin0-wert">0.00</span></div>
+      <div class="krümmung-bar">
+        <span class="label">🌀 KRÜMMUNGSANTRIEB</span>
+        <span class="wert" id="krümmung-wert">0.000</span>
+      </div>
+      <div class="btn-row">
+        <button class="magneto" id="btnMagneto">🧲 MAGNETO</button>
+        <button class="vital" id="btnVital">🌀 VITAL</button>
+        <button id="btnOrbitBoost">🔄 ORBIT +0.1</button>
+        <button id="btnSuiteBoost">🎭 SUITE +0.1</button>
+        <button id="btnAdmin0Boost">🟥 ADMIN-0 +0.1</button>
+      </div>
+      <div style="margin-top:4px;">
+        <div class="anime-grid" id="anime-grid"></div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" id="btnAnime">🎨 ANIME</button>
+        <button class="secondary" id="btnShuffle">🔄 SHUFFLE</button>
+        <button class="primary" id="btnHologramm">🌀 HOLOGRAMM</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>📜 CHRONIK</h2>
+      <div class="log" id="logBox">
+        <div class="entry"><span class="time">[init]</span> <span class="msg highlight">AXIOMROOT · OS · BIOS · AXIOM geladen.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>🔗 BOOT‑BLOCK LINK — <span id="boot-status" style="color:#666;">○ verbinde…</span></h2>
+      <div class="metric-grid">
+        <div class="metric bootlink"><div class="label">MODE</div><div class="value" id="boot-mode">—</div></div>
+        <div class="metric bootlink"><div class="label">ACHSEN (A81)</div><div class="value" id="boot-achsen">—</div></div>
+        <div class="metric bootlink"><div class="label">ZAHNRAD</div><div class="value" id="boot-gear">—</div></div>
+        <div class="metric bootlink"><div class="label">ENERGIE</div><div class="value" id="boot-energy">—</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="bootlink" id="btnBootReload">🔄 Verbindung neu laden</button>
+      </div>
+      <iframe id="bootFrame" src="master-boot-block.html" style="display:none; width:0; height:0; border:0;"></iframe>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <h2>🗂 MODULE · EINGEBETTETE SYSTEME</h2>
+    <div class="btn-row">
+      <button class="primary module-tab active" data-src="quecksilber-metaball.html">🧿 QUECKSILBER</button>
+      <button class="primary module-tab" data-src="planetrischer-organismus.html">🌌 ORGANISMUS</button>
+      <button class="primary module-tab" data-src="respo-schaltung.html">⚙️ RESPO-SCHALTUNG</button>
+    </div>
+    <div style="position:relative; width:100%; aspect-ratio:4/3; max-height:70vh; border-radius:16px; overflow:hidden; border:1px solid rgba(160,200,240,0.08); margin-top:8px; background:#05070c;">
+      <iframe id="moduleFrame" src="quecksilber-metaball.html" style="width:100%; height:100%; border:0;" title="eingebettetes Modul"></iframe>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="stat">⚡ Energie: <span id="footerEnergy">0%</span></div>
+    <div class="stat">🌀 Zahnrad: <span id="footerGear">0</span></div>
+    <div class="stat">📐 Achsen: <span id="footerAxles">756</span></div>
+    <div class="stat">⌨️  space=Step  o=Orbit  s=Suite  a=Admin0  m=Magneto  n=Narrativ  p=Pulse  x=Reset  v=Vital  h=Hologramm  r=RIR  y=XyX</div>
+  </div>
+
 </div>
 
-<div class="panel" style="border-color:#3d5a70">
-    <h3>📜 SYSTEM · INFO</h3>
-    <div id="systemInfo">
-        <pre style="color:#3d5a70;font-size:9px">⏳ System wird initialisiert...</pre>
-    </div>
-</div>
-
-<script type="importmap">
-{
-    "imports": {
-        "./": "./"
-    }
-}
-</script>
-
-<script type="module">
-// ─── IMPORTS ────────────────────────────────────────────────────
-// DISpatcher‑Module
-import { baseDQF } from "./3.js";
-import { extendedDQF } from "./81.js";
-import { XyX } from "./XyX.js";
-import { stateProxy } from "./243.js";
-import { RIR } from "./RIR.Core.js";
-import { KIT } from "./KIT.js";
-import { RIR_KIT } from "./RIR_KIT.js";
-
-// ─── DOM ──────────────────────────────────────────────────────
-const output = document.getElementById('output');
-const kernelOutput = document.getElementById('kernelOutput');
-const xyxOutput = document.getElementById('xyxOutput');
-const moduleStatus = document.getElementById('moduleStatus');
-const systemInfo = document.getElementById('systemInfo');
-const licenseDisplay = document.getElementById('licenseDisplay');
-
-// ─── KERNEL (lokal) ──────────────────────────────────────────
-const KERNEL = {
-    etagen: [3, 9, 27, 81, 243, 729],
-    trennung(v, e) {
-        const q = Math.floor(v / e);
-        return { geteilt: v / e, mod: v % e, quotient: q, rest: v - q * e };
-    },
-    run(v) {
-        const r = {};
-        this.etagen.forEach(e => { r[e] = this.trennung(v, e); });
-        return r;
-    }
+<script>
+// ================================================================
+// 1. PFAD & STATE (zentrale Datenquelle)
+// ================================================================
+const PFAD = [81, 9, 3, 9, 81];
+const ACHSEN = ["d", "e", "i", "n", "o", "r", "s", "u", "w"];
+const MODE_MAP = {
+  0: 'STAGE', 1: 'STAGE', 2: 'STAGE', 3: 'STAGE',
+  4: 'AIR', 5: 'AIR', 6: 'AIR', 7: 'AIR',
+  8: 'AIV', 9: 'AIV', 10: 'OMNI', 11: 'OMNI'
 };
 
-const AXIOME = {
-    d: { label: "Dimension", symbol: "◇", vector: 1.11 },
-    e: { label: "Energie", symbol: "⚡", vector: 1.33 },
-    i: { label: "Identität", symbol: "◆", vector: 0.77 },
-    n: { label: "Narrativ", symbol: "📖", vector: 0.92 },
-    o: { label: "Orbit", symbol: "◎", vector: 1.44 },
-    r: { label: "Raum", symbol: "▣", vector: 1.66 },
-    s: { label: "System", symbol: "⬡", vector: 1.21 },
-    w: { label: "Welle", symbol: "〜", vector: 1.55 },
-    u: { label: "Universum", symbol: "🌌", vector: 2.0 }
+const state = {
+  pfadIndex: 0,
+  a81: PFAD[0],
+  mode: 'STAGE',
+  gear: 0,
+  step: 0,
+  energy: 0,
+  pump: 0,
+  hits: 0,
+  lastMove: '—',
+  axle: 'neutral',
+  door: false,
+  doo: false,
+  orbit: 0.5,
+  suite: 0.5,
+  commander: 0.5,
+  admin0: 0.5,
+  vital: 0.5,
+  krümmung: 0,
+  rirResult: null,
+  xyxState: null,
+  loopTimer: null,
+  loopActive: false,
+  bootConnected: false
 };
 
-// ─── LICENSE (einfach) ──────────────────────────────────────
-function checkLicense() {
-    licenseDisplay.innerHTML = `<pre style="color:#6bffa9;font-size:9px">
-✅ LIZENZ AKTIV · iki1uc / wieimmer4u
-Kommerziell: ❌ VERBOTEN · Weitergabe: ❌ VERBOTEN · Modifikation: ❌ VERBOTEN
-    </pre>`;
-    return true;
-}
+window.STATE = state;
 
-// ─── MODULE STATUS ────────────────────────────────────────────
-function showModules() {
-    const modules = [
-        { name: "3.js (baseDQF)", ok: typeof baseDQF === 'function' },
-        { name: "81.js (extendedDQF)", ok: typeof extendedDQF === 'function' },
-        { name: "XyX.js", ok: typeof XyX === 'function' },
-        { name: "243.js (stateProxy)", ok: typeof stateProxy === 'object' },
-        { name: "RIR.Core", ok: typeof RIR === 'object' },
-        { name: "KIT.js", ok: typeof KIT === 'object' },
-        { name: "RIR_KIT.js", ok: typeof RIR_KIT === 'function' }
-    ];
-
-    moduleStatus.innerHTML = modules.map(m =>
-        `<span class="badge ${m.ok ? 'ok' : 'err'}">${m.ok ? '✅' : '❌'}</span> ${m.name}`
-    ).join('<br>');
-}
-
-// ─── RUN ──────────────────────────────────────────────────────
-function runAll() {
-    const x = Number(document.getElementById('x').value) || 3;
-    const y = Number(document.getElementById('y').value) || 9;
-    const z = Number(document.getElementById('z').value) || 27;
-    const etage = Number(document.getElementById('etageSelect').value) || 81;
-    const wert = Number(document.getElementById('wertInput').value) || 81;
-    const axiomKey = document.getElementById('axiomSelect').value;
-    const axiom = AXIOME[axiomKey] || AXIOME.e;
-
-    // ─── DISPATCHER‑MODULE ────────────────────────────────────
-    const rirCheck = typeof RIR === 'object' ? RIR.return({ x, y, z }) : { RIR: "unavailable" };
-
-    let dqf = null;
-    try { dqf = baseDQF(x, y, z); } catch (e) { dqf = { error: e.message }; }
-
-    let dqfx = null;
-    try { dqfx = extendedDQF(x, y, z); } catch (e) { dqfx = { error: e.message }; }
-
-    let xyx = null;
-    try { xyx = XyX(x, y, z); } catch (e) { xyx = { error: e.message }; }
-
-    let state = null;
-    try { state = stateProxy[`${x},${y},${z}`]; } catch (e) { state = { error: e.message }; }
-
-    let rirKit = null;
-    try { rirKit = RIR_KIT({ x, y, z }); } catch (e) { rirKit = { error: e.message }; }
-
-    // ─── KERNEL ──────────────────────────────────────────────────
-    const kernelResult = KERNEL.run(wert);
-    const etageResult = KERNEL.trennung(wert, etage);
-
-    const dv = {
-        dir: etage * axiom.vector,
-        mag: Math.sqrt(etage * axiom.vector * 7.29),
-        flow: (etage * axiom.vector * 3.33).toFixed(2)
-    };
-    const transformed = Math.round((wert * dv.dir + dv.mag) * 100) / 100;
-
-    const tyq = { RAM: 8192, USED: 2048, FREE: 6144 };
-
-    // ─── OUTPUT ──────────────────────────────────────────────────
-    const result = {
-        input: { x, y, z, wert, etage, axiom: axiomKey },
-        dispatcher: { rir: rirCheck, dqf, dqfx, xyx, state, rirKit },
-        kernel: { etageResult, directV: dv, vector: transformed, tyq },
-        timestamp: new Date().toISOString()
-    };
-
-    output.innerHTML = `<pre style="color:#0f0">${JSON.stringify(result, null, 2)}</pre>`;
-
-    kernelOutput.innerHTML = `<pre style="color:#6bffa9">
-${Object.keys(kernelResult).map(e =>
-    `${e}: geteilt=${kernelResult[e].geteilt.toFixed(3)}, mod=${kernelResult[e].mod}, rest=${kernelResult[e].rest}`
-).join('\n')}
-    </pre>`;
-
-    xyxOutput.innerHTML = `<pre style="color:#ffd700">
-${xyx ? JSON.stringify(xyx, null, 2) : '❌ XyX nicht verfügbar'}
-    </pre>`;
-
-    systemInfo.innerHTML = `<pre style="color:#3d5a70;font-size:9px">
-✅ LETZTER RUN: ${result.timestamp}
-X:${x} Y:${y} Z:${z} · ETAGE:${etage} · WERT:${wert} · AXIOM:${axiomKey}
-RIR: ${rirCheck.RIR === 'accept' ? '✅' : '❌'} · KIT: ${rirKit?.status === 'accept' ? '✅' : '❌'}
-    </pre>`;
-}
-
-// ─── RESET ────────────────────────────────────────────────────
-function resetAll() {
-    document.getElementById('x').value = '3';
-    document.getElementById('y').value = '9';
-    document.getElementById('z').value = '27';
-    document.getElementById('etageSelect').value = '81';
-    document.getElementById('wertInput').value = '81';
-    document.getElementById('axiomSelect').value = 'e';
-    output.innerHTML = '<pre style="color:#0a0">⏳ Reset · Bereit</pre>';
-    kernelOutput.innerHTML = '<pre style="color:#444">⏳ Kernel wartet...</pre>';
-    xyxOutput.innerHTML = '<pre style="color:#444">⏳ XyX wartet...</pre>';
-}
-
-// ─── SWAP ────────────────────────────────────────────────────
-function swapAll() {
-    const etagen = [3, 9, 27, 81, 243, 729];
-    const axioms = ['d','e','i','n','o','r','s','w','u'];
-    document.getElementById('x').value = Math.floor(Math.random() * 20) + 1;
-    document.getElementById('y').value = Math.floor(Math.random() * 20) + 1;
-    document.getElementById('z').value = Math.floor(Math.random() * 20) + 1;
-    document.getElementById('etageSelect').value = etagen[Math.floor(Math.random() * etagen.length)];
-    document.getElementById('axiomSelect').value = axioms[Math.floor(Math.random() * axioms.length)];
-    document.getElementById('wertInput').value = Math.floor(Math.random() * 100) + 1;
-    runAll();
-}
-
-// ─── EXPOSE ────────────────────────────────────────────────────
-window.runAll = runAll;
-window.resetAll = resetAll;
-window.swapAll = swapAll;
-
-// ─── INIT ──────────────────────────────────────────────────────
-window.onload = function() {
-    checkLicense();
-    showModules();
-    setTimeout(runAll, 300);
-    console.log("✅ DISpatcher · index.html geladen");
+// ================================================================
+// 2. RIR / XyX / 243 (inline)
+// ================================================================
+const RIR = {
+  exist(i) { return i !== undefined && i !== null; },
+  structure(i) { if (typeof i !== 'object') return false; return ['x','y','z'].every(k => k in i); },
+  purity(i) { const {x,y,z}=i; return Number.isFinite(x)&&Number.isFinite(y)&&Number.isFinite(z); },
+  filter(i) { if (!this.exist(i)) return null; if (!this.structure(i)) return null; if (!this.purity(i)) return null; return i; },
+  return(i) { const p=this.filter(i); if (!p) return {RIR:'reject'}; return {RIR:'accept', packet:p}; }
 };
+function baseDQF(x,y,z){ return {D:`Dim(${x+y+z})`, Q:(x*y*z)%3, F:`F-${Math.abs(x-y)}`}; }
+function extendedDQF(x,y,z){ return {D:`Dim9(${(x+y+z)*9})`, Q:(x*y*z)%9, F:`FX-${(x+1)*(y+1)}`}; }
+function XyX(x,y,z){
+  const sum=x+y+z; const mode=sum%2===0?'AIR':'AIV';
+  return {mode, lift:mode==='AIR'?sum*1.5:0, down:mode==='AIV'?sum*2.1:0, D:`DimX(${x*y*z})`, Q:(x+y+z)%7, F:`Fxy-${x}-${y}-${z}`};
+}
+function generateState(x,y,z){
+  if (x===9||y===9||z===9) return XyX(x,y,z);
+  const dqf=(x+y+z)>20?extendedDQF(x,y,z):baseDQF(x,y,z);
+  return {x:x*x, y:y*2, z:z+7, meta:`Zustand (${x},${y},${z})`, dqf};
+}
+
+// ================================================================
+// 3. RAWATOR · LEBENDIG
+// ================================================================
+const RAWATOR = {
+  vital: 0.5,
+  co2: { name:'CO₂', atoms:['C','O₂'], vital:0.3 },
+  wasser: { name:'H₂O', atoms:['H₂','O'], vital:0.7 },
+  sauerstoff: { name:'O₂', atoms:['O₂'], vital:0.9 },
+  anime: [],
+  shuffle: [],
+  init() {
+    for (let i=1; i<=81; i++) this.anime.push({ id:`A${i}`, vital:0.3+Math.random()*0.6, active:i%9===0 });
+    const moves=['STEP','SLIDE','SHIFT','SPIN','FLOW','BREAK','RISE','DROP','WAVE'];
+    for (let i=0; i<81; i++) this.shuffle.push({ move:moves[i%moves.length], step:i+1, energy:0.5+Math.random()*0.5 });
+    this.updateMetrics();
+  },
+  updateMetrics(){
+    const total=this.anime.reduce((a,b)=>a+b.vital,0);
+    this.vital=total/this.anime.length;
+    this.co2.vital=0.3+(1-this.vital)*0.4;
+    this.wasser.vital=0.5+this.vital*0.3;
+    this.sauerstoff.vital=0.6+this.vital*0.3;
+  },
+  hologramProof(){
+    const lebendig=this.anime.filter(a=>a.vital>0.5).length;
+    return { total:this.anime.length, lebendig, vital:this.vital };
+  }
+};
+RAWATOR.init();
+
+// ================================================================
+// 4. MAGNETO · PILOT
+// ================================================================
+const MAGNETO = {
+  orbit: 0.5, suite: 0.5, commander: 0.5, admin0: 0.5, pipeline: 3,
+  speedCount: 0, running: false, cycle: 0, energy: 0, krümmung: 0,
+  command() {
+    this.speedCount++;
+    this.orbit = Math.min(1, this.orbit + 0.05 + Math.random()*0.1);
+    this.suite = Math.min(1, this.suite + 0.05 + Math.random()*0.1);
+    this.commander = Math.min(1, this.commander + 0.05 + Math.random()*0.1);
+    this.admin0 = Math.min(1, this.admin0 + 0.05 + Math.random()*0.1);
+    this.energy = Math.min(100, this.energy + 2 + Math.random()*5);
+    this.krümmung = (this.orbit+this.suite+this.commander+this.admin0)/4;
+    const levels=[3,9,27,81]; const idx=levels.indexOf(this.pipeline);
+    this.pipeline=levels[(idx+1)%levels.length];
+    this.cycle++;
+    RAWATOR.vital = Math.min(1, RAWATOR.vital + 0.01 + Math.random()*0.02);
+    RAWATOR.updateMetrics();
+    return this.getStatus();
+  },
+  getStatus(){ return { orbit:this.orbit, suite:this.suite, commander:this.commander, admin0:this.admin0, pipeline:this.pipeline, energy:this.energy, krümmung:this.krümmung, cycle:this.cycle }; }
+};
+
+window.RAWATOR = RAWATOR;
+window.MAGNETO = MAGNETO;
+
+// ================================================================
+// 5. LOG & UI
+// ================================================================
+function log(msg, type='') {
+  const box=document.getElementById('logBox');
+  const time=new Date().toLocaleTimeString('de-DE');
+  const entry=document.createElement('div');
+  entry.className='entry';
+  let cls='msg';
+  if (type==='highlight') cls+=' highlight';
+  else if (type==='vital') cls+=' vital';
+  else if (type==='magneto') cls+=' magneto';
+  else if (type==='bootlink') cls+=' bootlink';
+  else if (type==='admin0') cls+=' admin0';
+  else if (type==='orbit') cls+=' orbit';
+  else if (type==='suite') cls+=' suite';
+  entry.innerHTML=`<span class="time">[${time}]</span> <span class="${cls}">${msg}</span>`;
+  box.prepend(entry);
+  while(box.children.length>60) box.lastChild?.remove();
+}
+
+function updateUI() {
+  const s=state;
+  document.getElementById('a81Display').textContent=s.a81;
+  document.getElementById('pathIndexDisplay').textContent=s.pfadIndex;
+  document.getElementById('gearDisplay').textContent=s.gear;
+  document.getElementById('modeDisplay').textContent=s.mode;
+  const mc={STAGE:'#6ec8ff', AIR:'#ffd866', AIV:'#ff7b7b', OMNI:'#b388ff'};
+  document.getElementById('modeDisplay').style.color=mc[s.mode]||'#6ec8ff';
+  document.getElementById('energyFill').style.width=s.energy+'%';
+  document.getElementById('footerEnergy').textContent=s.energy+'%';
+  document.getElementById('footerGear').textContent=s.gear;
+  for(let i=0;i<PFAD.length;i++){
+    const el=document.getElementById('p'+i);
+    if(el){ el.className=(i===s.pfadIndex)?'active':''; el.textContent=PFAD[i]; }
+  }
+  document.getElementById('pumpDisplay').textContent=s.pump;
+  document.getElementById('formADisplay').textContent=(s.pump/6).toFixed(2);
+  document.getElementById('formBDisplay').textContent=(s.pump/8).toFixed(2);
+  document.getElementById('hitsDisplay').textContent=s.hits;
+  document.getElementById('lastMoveDisplay').textContent=s.lastMove;
+  document.getElementById('axleDisplay').textContent=s.axle;
+  document.getElementById('vital-value').textContent=RAWATOR.vital.toFixed(2);
+  document.getElementById('magneto-value').textContent=(MAGNETO.orbit+MAGNETO.suite+MAGNETO.commander+MAGNETO.admin0).toFixed(2);
+  document.getElementById('orbit-wert').textContent=MAGNETO.orbit.toFixed(2);
+  document.getElementById('suite-wert').textContent=MAGNETO.suite.toFixed(2);
+  document.getElementById('commander-wert').textContent=MAGNETO.commander.toFixed(2);
+  document.getElementById('admin0-wert').textContent=MAGNETO.admin0.toFixed(2);
+  document.getElementById('krümmung-wert').textContent=MAGNETO.krümmung.toFixed(3);
+  const grid=document.getElementById('anime-grid');
+  grid.innerHTML='';
+  RAWATOR.anime.slice(0,9).forEach(f=>{
+    const el=document.createElement('div');
+    el.className='anime-frame active';
+    el.innerHTML=`<div class="id">${f.id}</div><div class="vital">${f.vital.toFixed(2)}</div>`;
+    grid.appendChild(el);
+  });
+  drawOrbit();
+}
+
+// ================================================================
+// 6. ORBIT-RENDER
+// ================================================================
+function drawOrbit() {
+  const canvas=document.getElementById('orbitCanvas');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width, h=canvas.height, cx=w/2, cy=h/2, r=150;
+  const t=Date.now()/1000;
+  ctx.clearRect(0,0,w,h);
+  const points=ACHSEN.map((_,i)=>{
+    const a=(i/ACHSEN.length)*2*Math.PI-Math.PI/2+Math.sin(t*0.1)*0.02;
+    return {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)};
+  });
+  ctx.strokeStyle='#1a2230'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  points.forEach((p,i)=>{ const n=points[(i+1)%points.length]; ctx.moveTo(p.x,p.y); ctx.lineTo(n.x,n.y); });
+  ctx.stroke();
+  points.forEach((p,i)=>{
+    const active=(ACHSEN[i]==='d');
+    ctx.beginPath(); ctx.arc(p.x,p.y,active?26:16,0,2*Math.PI);
+    ctx.fillStyle=active?'#ffd866':'#0e141c'; ctx.fill();
+    ctx.strokeStyle=active?'#ffd866':'#2a3a4a'; ctx.lineWidth=active?2:1; ctx.stroke();
+    ctx.fillStyle=active?'#06080c':'#5a6a7a';
+    ctx.font='600 16px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(ACHSEN[i],p.x,p.y);
+  });
+  const val=state.a81;
+  const px=cx+Math.sin(t*2+state.pfadIndex)*Math.min(60,val);
+  const py=cy+Math.cos(t*2+state.pfadIndex)*Math.min(60,val);
+  ctx.fillStyle=val===81?'#ff0':(val===3?'#0ff':'#0f0');
+  ctx.beginPath(); ctx.arc(px,py,val===81?10:6,0,2*Math.PI); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='10px monospace'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+  ctx.fillText(val,px,py-12);
+  const mc={STAGE:'#6ec8ff', AIR:'#ffd866', AIV:'#ff7b7b', OMNI:'#b388ff'};
+  const color=mc[state.mode]||'#6ec8ff';
+  document.getElementById('orbitLegend').innerHTML=`● <span style="color:${color}">${state.mode}</span> · PFAD ${val}`;
+}
+
+// ================================================================
+// 7. PFAD-STEP & LOOP
+// ================================================================
+function stepPFAD(){
+  state.energy=Math.min(100,state.energy+5);
+  state.gear=(state.gear+1)%12;
+  state.mode=MODE_MAP[state.gear]||'STAGE';
+  state.pfadIndex=(state.pfadIndex+1)%PFAD.length;
+  state.a81=PFAD[state.pfadIndex];
+  state.step++;
+  updateUI();
+  log(`⏭ Step ${state.step} · ${state.mode} · A81=${state.a81} · Zahnrad=${state.gear}`, 'highlight');
+}
+
+function toggleLoop(){
+  if(state.loopTimer){
+    clearInterval(state.loopTimer); state.loopTimer=null; state.loopActive=false;
+    document.getElementById('btnLoop').textContent='▶ Loop'; log('⏸ Loop gestoppt');
+  }else{
+    state.loopTimer=setInterval(stepPFAD,500); state.loopActive=true;
+    document.getElementById('btnLoop').textContent='⏹ Loop'; log('▶ Loop gestartet');
+  }
+}
+
+function toggleOmni(){
+  if(state.gear<10){ state.gear=10; state.mode='OMNI'; log('🌀 OMNI aktiviert!','highlight'); }
+  else { state.gear=8; state.mode='AIV'; log('🌀 OMNI deaktiviert → AIV','highlight'); }
+  updateUI(); drawOrbit();
+}
+
+function resetAll(){
+  if(state.loopTimer){ clearInterval(state.loopTimer); state.loopTimer=null; state.loopActive=false; document.getElementById('btnLoop').textContent='▶ Loop'; }
+  state.pfadIndex=0; state.a81=PFAD[0]; state.gear=0; state.mode='STAGE'; state.step=0; state.energy=0;
+  state.pump=0; state.hits=0; state.lastMove='—'; state.axle='neutral'; state.door=false; state.doo=false;
+  state.orbit=0.5; state.suite=0.5; state.admin0=0.5; state.commander=0.5; state.vital=0.5; state.krümmung=0;
+  RAWATOR.vital=0.5; RAWATOR.updateMetrics();
+  MAGNETO.orbit=0.5; MAGNETO.suite=0.5; MAGNETO.commander=0.5; MAGNETO.admin0=0.5; MAGNETO.krümmung=0; MAGNETO.pipeline=3; MAGNETO.energy=0; MAGNETO.speedCount=0; MAGNETO.cycle=0;
+  updateUI(); drawOrbit(); log('⟲ RESET – Alles zurückgesetzt','highlight');
+}
+
+// ================================================================
+// 8. ENGINE & MOVES
+// ================================================================
+function predictiveEngine(){ state.pump++; state.hits+=(state.pump>0)?1:0; log(`🧠 predictiveEngine() · pump=${state.pump} · hits=${state.hits}`,'highlight'); updateUI(); }
+function resetEngine(){ state.pump=0; state.hits=0; log('⟲ Engine zurückgesetzt','highlight'); updateUI(); }
+function doMove(t){ state.lastMove=t; log(`🌀 Move: ${t}`,'highlight'); document.getElementById('lastMoveDisplay').textContent=t; }
+function toggleAxle(){ state.axle=(state.axle==='neutral')?'active':'neutral'; log(`↕ Achse → ${state.axle}`,'highlight'); document.getElementById('axleDisplay').textContent=state.axle; }
+function doorAction(){ state.door=!state.door; log(`🚪 DOOR ${state.door?'geöffnet':'geschlossen'}`,'highlight'); }
+function dooAction(){ state.doo=!state.doo; log(`◈ DOO ${state.doo?'aktiviert':'deaktiviert'}`,'highlight'); }
+
+// ================================================================
+// 9. MAGNETO & RAWATOR Aktionen
+// ================================================================
+function magnetoCommand(){ const s=MAGNETO.command(); updateUI(); log(`🧲 MAGNETO · Orbit=${s.orbit.toFixed(2)} · Krümmung=${s.krümmung.toFixed(3)}`,'magneto'); }
+function vitalBoost(){ RAWATOR.vital=Math.min(1,RAWATOR.vital+0.1+Math.random()*0.1); RAWATOR.updateMetrics(); updateUI(); log(`🌀 VITAL + → ${RAWATOR.vital.toFixed(2)}`,'vital'); }
+function orbitBoost(){ MAGNETO.orbit=Math.min(1,MAGNETO.orbit+0.1); updateUI(); log(`🔄 ORBIT +0.1 → ${MAGNETO.orbit.toFixed(2)}`,'orbit'); }
+function suiteBoost(){ MAGNETO.suite=Math.min(1,MAGNETO.suite+0.1); updateUI(); log(`🎭 SUITE +0.1 → ${MAGNETO.suite.toFixed(2)}`,'suite'); }
+function admin0Boost(){ MAGNETO.admin0=Math.min(1,MAGNETO.admin0+0.1); updateUI(); log(`🟥 ADMIN-0 +0.1 → ${MAGNETO.admin0.toFixed(2)}`,'admin0'); }
+
+// ================================================================
+// 10. RIR / XyX
+// ================================================================
+function rirCheck(){ const input={x:3,y:4,z:9}; const result=RIR.return(input); state.rirResult=result; log(`🛡 RIR (3,4,9) → ${result.RIR}`,'highlight'); updateUI(); }
+function xyxState(){ const input={x:9,y:3,z:7}; const s=generateState(input.x,input.y,input.z); state.xyxState=s; log(`🌀 XyX (9,3,7) → ${s.mode||'XyX'}`,'highlight'); updateUI(); }
+
+// ================================================================
+// 11. ANIME / SHUFFLE / HOLOGRAMM
+// ================================================================
+function showAnime(){ const frames=RAWATOR.anime.slice(0,9); let text='🎨 ANIME · 81 Frames\n'; frames.forEach(f=>text+=`${f.id}: ${f.vital.toFixed(2)} ${f.active?'●':'○'}\n`); log(text,'highlight'); }
+function showShuffle(){ const sh=RAWATOR.shuffle.slice(0,9); const moves=sh.map(s=>s.move).join(' '); log(`🔄 SHUFFLE · ${sh.length} Steps · Moves: ${moves}`,'highlight'); }
+function hologramm(){ const p=RAWATOR.hologramProof(); log(`🌀 HOLOGRAMM · ${p.lebendig}/${p.total} lebendig · Vital ${p.vital.toFixed(2)}`,'highlight'); }
+
+// ================================================================
+// 12. BOOT-BLOCK LINK (iframe Reader)
+// ================================================================
+function syncBootBlock(){
+  const frame=document.getElementById('bootFrame');
+  try {
+    const bootState=frame.contentWindow.STATE;
+    if(!bootState) throw new Error('STATE nicht bereit');
+    if(!state.bootConnected){ state.bootConnected=true; document.getElementById('boot-status').textContent='● verbunden'; document.getElementById('boot-status').style.color='#4f4'; log('🔗 BOOT.BLOCK verbunden','bootlink'); }
+    document.getElementById('boot-mode').textContent=bootState.mode;
+    document.getElementById('boot-achsen').textContent=bootState.a81;
+    document.getElementById('boot-gear').textContent=bootState.gear;
+    document.getElementById('boot-energy').textContent=bootState.energy+'%';
+  }catch(e){
+    if(state.bootConnected){ state.bootConnected=false; log('⚠️ BOOT.BLOCK Verbindung verloren','bootlink'); }
+    document.getElementById('boot-status').textContent='○ nicht verbunden'; document.getElementById('boot-status').style.color='#666';
+  }
+}
+document.getElementById('btnBootReload').onclick=()=>{ state.bootConnected=false; document.getElementById('bootFrame').src=document.getElementById('bootFrame').src; log('🔄 BOOT.BLOCK-Frame neu geladen','bootlink'); };
+setInterval(syncBootBlock,600);
+
+// ================================================================
+// 13. TASTATUR
+// ================================================================
+document.addEventListener('keydown',(e)=>{
+  if(e.key===' '||e.key==='Space'){ e.preventDefault(); stepPFAD(); }
+  if(e.key==='o'||e.key==='O') orbitBoost();
+  if(e.key==='s'||e.key==='S') suiteBoost();
+  if(e.key==='a'||e.key==='A') admin0Boost();
+  if(e.key==='m'||e.key==='M') magnetoCommand();
+  if(e.key==='n'||e.key==='N'){ log(`📖 NARRATIV: Triolet OS·BIOS·AXIOM · Vital ${RAWATOR.vital.toFixed(2)}`,'highlight'); }
+  if(e.key==='p'||e.key==='P') toggleLoop();
+  if(e.key==='x'||e.key==='X') resetAll();
+  if(e.key==='v'||e.key==='V') vitalBoost();
+  if(e.key==='h'||e.key==='H') hologramm();
+  if(e.key==='r'||e.key==='R') rirCheck();
+  if(e.key==='y'||e.key==='Y') xyxState();
+});
+
+// ================================================================
+// 14. BUTTONS
+// ================================================================
+document.getElementById('btnStep').addEventListener('click',stepPFAD);
+document.getElementById('btnLoop').addEventListener('click',toggleLoop);
+document.getElementById('btnStop').addEventListener('click',()=>{ if(state.loopTimer){ clearInterval(state.loopTimer); state.loopTimer=null; state.loopActive=false; document.getElementById('btnLoop').textContent='▶ Loop'; log('⏹ Loop manuell gestoppt'); } });
+document.getElementById('btnOmni').addEventListener('click',toggleOmni);
+document.getElementById('btnReset').addEventListener('click',resetAll);
+document.getElementById('btnPredictive').addEventListener('click',predictiveEngine);
+document.getElementById('btnResetEngine').addEventListener('click',resetEngine);
+document.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>doMove(b.dataset.move)));
+document.getElementById('btnToggleAxle').addEventListener('click',toggleAxle);
+document.getElementById('btnDoor').addEventListener('click',doorAction);
+document.getElementById('btnDoo').addEventListener('click',dooAction);
+document.getElementById('btnMagneto').addEventListener('click',magnetoCommand);
+document.getElementById('btnVital').addEventListener('click',vitalBoost);
+document.getElementById('btnOrbitBoost').addEventListener('click',orbitBoost);
+document.getElementById('btnSuiteBoost').addEventListener('click',suiteBoost);
+document.getElementById('btnAdmin0Boost').addEventListener('click',admin0Boost);
+document.getElementById('btnRir').addEventListener('click',rirCheck);
+document.getElementById('btnXyx').addEventListener('click',xyxState);
+document.getElementById('btnAnime').addEventListener('click',showAnime);
+document.getElementById('btnShuffle').addEventListener('click',showShuffle);
+document.getElementById('btnHologramm').addEventListener('click',hologramm);
+
+// ================================================================
+// 15. MODUL-TABS (eingebettete Systeme per iframe)
+// ================================================================
+document.querySelectorAll('.module-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.module-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const frame = document.getElementById('moduleFrame');
+    frame.src = btn.dataset.src;
+    log(`🗂 Modul gewechselt → ${btn.textContent.trim()}`, 'highlight');
+  });
+});
+
+// ================================================================
+// 16. INIT
+// ================================================================
+updateUI();
+drawOrbit();
+log('🌀 AXIOMROOT · OS · BIOS · AXIOM geladen','highlight');
+log('⌨️  space=Step  o=Orbit  s=Suite  a=Admin0  m=Magneto  n=Narrativ  p=Pulse  x=Reset  v=Vital  h=Hologramm  r=RIR  y=XyX','highlight');
 </script>
 
 </body>
