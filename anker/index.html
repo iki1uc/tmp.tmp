@@ -1,575 +1,987 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3hoch3 · Response Layer 7 · Energie‑Matrix (27D)</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧿 RESPO · HUB · 81-MATRIX · HDF · WORKBOARD</title>
 
-<style>
-  :root {
-    --bg: #0a0a12;
-    --fg: #7ff;
-    --accent: #6cf;
-    --axiom: #ffaa00;
-    --ok: #4f4;
-    --nok: #f44;
-    --flow: #4af;
-    --break: #f84;
-    --echo: #f4f;
-    --void: #666;
-    --root: #ffd700;
-    --border: #1a2a2a;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: 'Consolas', monospace;
-    padding: 16px;
-    min-height: 100vh;
-    display: grid;
-    grid-template-rows: auto auto 1fr auto;
-    gap: 10px;
-  }
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
 
-  header {
-    border-bottom: 2px solid var(--axiom);
-    padding-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  header h1 {
-    font-size: 18px;
-    background: linear-gradient(90deg, var(--axiom), var(--fg), var(--echo));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
-  }
-  header .sub { color: #567; font-size: 10px; letter-spacing: 2px; }
+    body {
+      background: radial-gradient(ellipse at 20% 30%, #0a0e1a, #000000);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Consolas', monospace;
+      padding: 12px;
+      color: #c0d0d0;
+    }
 
-  .panel {
-    background: #05050a;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px;
-  }
-  .panel h2, .panel h3 {
-    color: var(--axiom);
-    font-size: 12px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 4px;
-    margin-bottom: 8px;
-  }
+    .container {
+      max-width: 1400px;
+      width: 100%;
+      background: rgba(6,8,16,0.6);
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+      padding: 18px 22px 24px;
+      border: 1px solid rgba(160,200,240,0.05);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 80px rgba(100,180,255,0.02);
+    }
 
-  /* ── STATION‑MAP ── */
-  #stationBar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-  }
-  .station {
-    background: #0a0a12;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 4px;
-    text-align: center;
-    font-size: 9px;
-    cursor: default;
-    transition: 0.2s;
-  }
-  .station:hover { border-color: var(--axiom); }
-  .station .dim { color: var(--root); font-weight: bold; font-size: 12px; }
-  .station .name { color: var(--fg); }
-  .station .role { color: #567; font-size: 8px; }
-  .station.active { border-color: var(--ok); box-shadow: 0 0 8px rgba(80,255,80,0.15); }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(160,200,240,0.06);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    header h1 {
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, #e0e8f0, #b0c8d8, #8098b0, #c0d8e8, #b388ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header h1 small { font-size: 11px; letter-spacing: 2px; -webkit-text-fill-color:#4a5a6a; color:#4a5a6a; }
+    .status-leds { display:flex; gap:16px; font-size:11px; color:#5a7a8a; flex-wrap:wrap; }
+    .status-leds span { display:flex; align-items:center; gap:5px; }
+    .led {
+      display:inline-block; width:9px; height:9px; border-radius:50%;
+      background:#2a4a5a; transition:.3s;
+    }
+    .led.on { background:#8cf0d0; box-shadow:0 0 12px #8cf0d0; }
+    .led.pulse { background:#f0d080; animation:pulse 1.2s infinite; }
+    .led.off { background:#2a4a5a; }
+    @keyframes pulse { 0%,100%{opacity:.4;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
 
-  /* ── MAIN GRID ── */
-  main { display: grid; grid-template-columns: 3fr 2fr; gap: 10px; min-height: 500px; }
-  @media (max-width: 950px) { main { grid-template-columns: 1fr; } }
+    /* ─── MENÜ ─────────────────────────────────────────────────── */
+    .menu-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 16px;
+      padding: 4px 6px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(100,180,255,0.03);
+    }
+    .menu-bar button {
+      background: transparent;
+      border: none;
+      color: #5a7a8a;
+      padding: 6px 18px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 1px;
+    }
+    .menu-bar button:hover { color: #b0c8d8; background: rgba(40,70,90,0.15); }
+    .menu-bar button.active {
+      color: #f0d080;
+      background: rgba(255,215,0,0.06);
+      box-shadow: inset 0 0 20px rgba(255,215,0,0.02);
+    }
 
-  #controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-  select, input[type=range], textarea, input[type=text] {
-    background: #001; color: var(--fg); border: 1px solid #034;
-    padding: 4px 6px; border-radius: 4px; font-family: inherit; font-size: 10px;
-  }
-  label { font-size: 10px; color: #789; }
+    /* ─── TAB-CONTENT ─────────────────────────────────────────── */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity:0.3; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-  button {
-    background: #111; color: var(--fg); border: 1px solid #333;
-    padding: 4px 10px; border-radius: 4px; cursor: pointer;
-    font-family: inherit; font-size: 9px; transition: 0.2s;
-  }
-  button:hover { background: #1a2a2a; border-color: var(--fg); }
-  button.primary { border-color: var(--axiom); color: var(--axiom); }
-  button.primary:hover { background: var(--axiom); color: #000; }
+    /* ─── GLOBALE WERKZEUGLEISTE ────────────────────────────── */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: rgba(0,0,0,0.15);
+      border-radius: 14px;
+      padding: 6px 12px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(100,180,255,0.02);
+    }
+    .toolbar input {
+      background: rgba(20,28,36,0.5);
+      border: 1px solid rgba(120,160,190,0.08);
+      color: #d0e0e8;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 10px;
+      font-family: inherit;
+      flex:1;
+      min-width:80px;
+    }
+    .toolbar input::placeholder { color:#4a5a6a; }
+    button {
+      background: rgba(20,28,36,0.4);
+      border: 1px solid rgba(120,160,190,0.06);
+      color: #9ab0c0;
+      padding: 4px 14px;
+      border-radius: 18px;
+      font-size: 10px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover { background:rgba(40,70,90,0.2); border-color:rgba(160,200,240,0.1); color:#d0e8f8; }
+    button.primary { border-color:rgba(255,215,0,0.1); color:#f0d080; }
+    button.primary:hover { background:rgba(255,215,0,0.04); }
+    button.danger { border-color:rgba(255,80,80,0.08); color:#d06060; }
+    button.danger:hover { background:rgba(255,80,80,0.04); }
+    button.hdf { border-color:rgba(255,170,0,0.15); color:#ffaa00; }
+    button.hdf:hover { background:rgba(255,170,0,0.06); }
+    button.resolver { border-color:rgba(255,68,255,0.15); color:#f4f; }
+    button.resolver:hover { background:rgba(255,68,255,0.06); }
 
-  #grid {
-    display: grid;
-    gap: 3px;
-    margin-top: 6px;
-  }
-  .cell {
-    aspect-ratio: 1;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    border-radius: 5px; cursor: pointer; user-select: none;
-    background: #0a0a12; border: 1px solid var(--border);
-    font-size: 8px; color: #6a8a8a; transition: 0.15s;
-    position: relative;
-  }
-  .cell:hover { border-color: var(--axiom); }
-  .cell .idx { font-size: 7px; color: #445; position:absolute; top:2px; left:3px; }
-  .cell .state-dot { width:6px; height:6px; border-radius:50%; margin-top:2px; }
-  .cell .score { font-size: 8px; color: var(--root); margin-top:1px; }
+    /* ─── TAB 1: 81-MATRIX ──────────────────────────────────── */
+    .matrix-9x9 {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 3px;
+      max-width: 540px;
+      margin: 0 auto;
+      aspect-ratio: 1/1;
+    }
+    .cell81 {
+      background: rgba(24,32,40,0.3);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #8a9aaa;
+      cursor: pointer;
+      border: 1px solid rgba(100,140,170,0.03);
+      transition: all 0.2s;
+      aspect-ratio: 1/1;
+      text-shadow: 0 0 6px rgba(160,200,240,0.1);
+    }
+    .cell81:hover { border-color:rgba(200,230,255,0.15); transform:scale(1.02); z-index:2; }
+    .cell81.active {
+      background: radial-gradient(circle at 30% 30%, #d8e8f0, #a0b8c8);
+      color: #0a1218;
+      border-color: #b0d0e0;
+      box-shadow: 0 0 20px rgba(180,220,255,0.3);
+      transform: scale(1.06);
+      font-weight: bold;
+    }
 
-  .state-OK    { background: var(--ok); }
-  .state-NOK   { background: var(--nok); }
-  .state-FLOW  { background: var(--flow); }
-  .state-BREAK { background: var(--break); }
-  .state-ECHO  { background: var(--echo); }
-  .state-VOID  { background: var(--void); }
-  .state-ROOT  { background: var(--root); }
+    .matrix-stats {
+      display:flex; gap:16px; font-size:10px; color:#5a7a8a; justify-content:center; flex-wrap:wrap; margin-top:8px;
+    }
+    .matrix-stats span .val { color:#c0d8e8; font-weight:bold; }
 
-  /* ── DETAIL / LOG ── */
-  #detail-content { font-size: 10px; line-height: 1.5; }
-  #detail-content textarea { width: 100%; height: 60px; margin-top: 4px; }
-  .row { display: flex; gap: 6px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+    /* ─── TAB 2: HDF-RESOLVER ────────────────────────────────── */
+    .hdf-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width:800px) { .hdf-panel { grid-template-columns:1fr; } }
 
-  #topList { max-height: 160px; overflow-y: auto; font-size: 9px; margin-top: 6px; }
-  #topList .entry { padding: 3px 0; border-bottom: 1px solid var(--border); }
+    .hdf-card {
+      background: rgba(0,0,0,0.2);
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid rgba(100,180,255,0.03);
+    }
+    .hdf-card h4 {
+      font-size: 11px;
+      color: #b388ff;
+      letter-spacing: 1.5px;
+      border-bottom: 1px solid rgba(179,136,255,0.04);
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+    .cmd-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 4px;
+    }
+    .cmd-item {
+      background: rgba(10,14,20,0.4);
+      border: 1px solid rgba(100,180,255,0.04);
+      border-radius: 8px;
+      padding: 6px 4px;
+      text-align: center;
+      font-size: 9px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .cmd-item:hover { border-color:#f0d080; background:rgba(255,215,0,0.04); }
+    .cmd-item .key { color:#ffaa00; font-weight:bold; }
+    .cmd-item .target { color:#4af; }
+    .cmd-item .desc { font-size:7px; color:#445555; }
 
-  #log {
-    max-height: 130px; overflow-y: auto; font-size: 8px; color: #6a8a8a;
-    line-height: 1.4; background: #06060a; border-radius: 4px; padding: 4px 6px; margin-top: 8px;
-  }
-  #log .entry { padding: 1px 0; border-bottom: 1px solid #0a0a12; }
-  #log .time { color: #444; }
-  #log .ok { color: var(--ok); } #log .warn { color: var(--axiom); }
-  #log .info { color: var(--fg); } #log .err { color: var(--nok); }
+    .resolver-output {
+      background: #0a0a12;
+      border: 1px solid #1a1a2a;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 9px;
+      color: #8af;
+      white-space: pre-wrap;
+      min-height: 60px;
+      margin-top: 8px;
+      font-family: 'Consolas', monospace;
+    }
+    .one-room-box {
+      background: #0a0a12;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 8px;
+      color: #8af;
+      white-space: pre-wrap;
+      min-height: 40px;
+      border: 1px solid #1a1a2a;
+      font-family: 'Consolas', monospace;
+    }
 
-  #circleSVG { background: #000; border: 1px solid var(--border); border-radius: 8px; margin-top: 8px; }
+    /* ─── TAB 3: WORKBOARD ───────────────────────────────────── */
+    .workboard-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width:900px) { .workboard-layout { grid-template-columns:1fr; } }
 
-  #room-info { font-size: 9px; color: #789; margin-top: 6px; white-space: pre-wrap; background:#001; padding:6px; border-radius:4px; }
+    .repo-grid-wb {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+      gap: 6px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .repo-tile-wb {
+      background: rgba(10,14,20,0.5);
+      border: 1px solid rgba(100,180,255,0.06);
+      border-radius: 10px;
+      padding: 6px 6px 4px;
+      cursor: pointer;
+      transition:.2s;
+      position:relative;
+    }
+    .repo-tile-wb:hover { transform:translateY(-1px); border-color:rgba(160,200,240,0.12); }
+    .repo-tile-wb .name { font-size:9.5px; font-weight:600; color:#d0e0e8; padding-right:18px; word-break:break-word; }
+    .repo-tile-wb .chk {
+      position:absolute; top:4px; right:5px; width:14px; height:14px;
+      border-radius:4px; border:1px solid rgba(160,200,240,0.2);
+      background:rgba(0,0,0,0.3); font-size:9px; display:flex; align-items:center; justify-content:center;
+      color:#f0d080;
+    }
+    .repo-tile-wb.selected .chk { background:#f0d080; color:#0a0e1a; }
+    .repo-tile-wb .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+    .repo-tile-wb .dot.gruen { background:#8cf0d0; box-shadow:0 0 6px #8cf0d0; }
+    .repo-tile-wb .dot.gelb { background:#f0d080; box-shadow:0 0 6px #f0d080; }
+    .repo-tile-wb .dot.rot { background:#ff6b6b; box-shadow:0 0 6px #ff6b6b; }
+    .repo-tile-wb .meta { font-size:7px; color:#4a5a6a; margin-top:2px; }
 
-  footer { color: #456; font-size: 9px; text-align: center; padding-top: 6px; border-top: 1px solid var(--border); }
-</style>
+    .wb-board {
+      background: rgba(0,0,0,0.2);
+      border-radius: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(100,180,255,0.03);
+    }
+    .wb-board h4 {
+      font-size:11px; color:#f0d080; letter-spacing:1.5px;
+      border-bottom:1px solid rgba(255,215,0,0.04); padding-bottom:4px; margin-bottom:8px;
+      display:flex; justify-content:space-between;
+    }
+    .wb-board h4 span { color:#5a7a8a; font-weight:normal; font-size:10px; }
+    .wb-chip {
+      display:flex; justify-content:space-between; align-items:center; gap:6px;
+      background:rgba(20,28,36,0.4); border:1px solid rgba(100,180,255,0.04);
+      border-radius:8px; padding:4px 10px; font-size:9px; margin-bottom:4px; color:#d0e0e8;
+    }
+    .wb-chip button.rm { background:none; border:none; color:#d06060; cursor:pointer; font-size:12px; padding:0 4px; }
+    .tier-track {
+      display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:6px 0;
+    }
+    .tier-step {
+      flex:1; min-width:44px; text-align:center; padding:4px 2px; border-radius:8px;
+      background:rgba(20,28,36,0.3); border:1px solid rgba(120,160,190,0.04);
+      font-size:9px; color:#5a7a8a; cursor:pointer; transition:.2s;
+    }
+    .tier-step:hover { border-color:rgba(179,136,255,0.2); color:#d0c0f8; }
+    .tier-step .num { font-size:13px; font-weight:bold; display:block; color:#9ab0c0; }
+    .tier-step.reached { border-color:#8cf0d0; }
+    .tier-step.reached .num { color:#8cf0d0; }
+    .tier-step.current { border-color:#f0d080; box-shadow:0 0 12px rgba(240,208,128,0.1); }
+    .tier-step.current .num { color:#f0d080; }
+    .tier-arrow { color:#2a3a4a; font-size:10px; }
+
+    /* ─── LOG ────────────────────────────────────────────────── */
+    .log-box {
+      background: rgba(0,0,0,0.25);
+      border-radius: 10px;
+      padding: 4px 12px;
+      font-size: 8px;
+      color: #4a5a6a;
+      max-height: 70px;
+      overflow-y: auto;
+      line-height: 1.5;
+      border: 1px solid rgba(100,180,255,0.02);
+      margin-top: 12px;
+      font-family: 'Consolas', monospace;
+    }
+    .log-box .entry { border-bottom:1px solid rgba(100,180,255,0.02); padding:1px 0; }
+    .log-box .time { color:#2a3a4a; }
+    .log-box .msg { color:#8ab0c0; }
+    .log-box .msg.ok { color:#8cf0d0; }
+    .log-box .msg.warn { color:#f0d080; }
+    .log-box .msg.err { color:#ff6b6b; }
+
+    .footer {
+      display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:12px;
+      padding:4px 12px; background:rgba(0,0,0,0.12); border-radius:12px;
+      border:1px solid rgba(100,180,255,0.02); font-size:8px; color:#3a4a5a;
+    }
+    .footer .gold { color:#f0d080; }
+    .footer .stat { display:flex; align-items:center; gap:4px; }
+
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:#080c12; }
+    ::-webkit-scrollbar-thumb { background:#1a2a3a; border-radius:4px; }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1>🌀 3hoch3 · Response Layer 7 · Energie‑Matrix (27D)</h1>
-  <div class="sub">3D → 6D → 12D → 12D² → Dezimierung → Optimierung → 6E &nbsp;·&nbsp; iki1uc</div>
-</header>
+<div class="container">
 
-<!-- STATIONS-KARTE (aus ID.html / README) -->
-<div class="panel">
-  <h2>📡 Stationsmodell · 3‑6‑9‑12‑6E (gekrümmt)</h2>
-  <div id="stationBar"></div>
-  <div id="room-info"></div>
+  <header>
+    <h1>🧿 RESPO · HUB <small>81-MATRIX · HDF · WORKBOARD</small></h1>
+    <div class="status-leds">
+      <span><span class="led on" id="ledSystem"></span> SYSTEM</span>
+      <span><span class="led pulse" id="ledMatrix"></span> MATRIX</span>
+      <span><span class="led" id="ledHdf"></span> HDF</span>
+      <span><span class="led" id="ledBoard"></span> BOARD</span>
+    </div>
+  </header>
+
+  <!-- MENÜ -->
+  <div class="menu-bar" id="menuBar">
+    <button class="active" data-tab="tabMatrix">🧩 81-MATRIX</button>
+    <button data-tab="tabHdf">⚙️ HDF-RESOLVER</button>
+    <button data-tab="tabWorkboard">📋 WORKBOARD</button>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- TAB 1: 81-MATRIX -->
+  <!-- ========================================================= -->
+  <div class="tab-content active" id="tabMatrix">
+    <div class="toolbar">
+      <span style="font-size:10px;color:#5a7a8a;">9×9 · 81 Zellen</span>
+      <span style="font-size:10px;color:#5a7a8a;">🔹 aktiv: <span id="mActive">0</span>/81</span>
+      <span style="font-size:10px;color:#5a7a8a;">⚡ <span id="mEnergy">0</span>%</span>
+      <span style="font-size:10px;color:#5a7a8a;">🎯 <span id="mScore">0</span></span>
+      <button class="primary" id="mReset">⟲ Reset</button>
+      <button id="mRandom">🎲 Random</button>
+    </div>
+    <div class="matrix-9x9" id="matrixGrid"></div>
+    <div class="matrix-stats">
+      <span>🌀 Zahnrad: <span class="val" id="mGear">0</span></span>
+      <span>📐 Modus: <span class="val" id="mMode">STAGE</span></span>
+      <span>🔢 A81: <span class="val" id="mA81">81</span></span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- TAB 2: HDF-RESOLVER -->
+  <!-- ========================================================= -->
+  <div class="tab-content" id="tabHdf">
+    <div class="toolbar">
+      <button class="hdf" id="hResolve">⚙️ RESOLVE</button>
+      <button class="primary" id="hSlide">📐 SLIDE</button>
+      <button class="resolver" id="hHdfRespo">📊 HDFRESPO</button>
+      <button class="hdf" id="hID">🆔 ID</button>
+      <button id="hAuto">▶ AUTO</button>
+      <button class="danger" id="hReset">⟲ Reset</button>
+      <span style="font-size:10px;color:#5a7a8a;margin-left:auto;">HDF <span id="hCount">0</span></span>
+    </div>
+
+    <div class="hdf-panel">
+      <div class="hdf-card">
+        <h4>⌨️ COMMANDS.room</h4>
+        <div class="cmd-grid" id="cmdGrid"></div>
+        <div class="resolver-output" id="resolverOutput">⚙️ Resolver bereit · warte auf Auftrag</div>
+      </div>
+      <div class="hdf-card">
+        <h4>📋 one.room · Aufträge</h4>
+        <div class="one-room-box" id="oneRoomBox"></div>
+        <div style="margin-top:6px;font-size:8px;color:#445555;">Klick auf einen Command → ausführen</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- TAB 3: WORKBOARD -->
+  <!-- ========================================================= -->
+  <div class="tab-content" id="tabWorkboard">
+    <div class="toolbar">
+      <input type="text" id="wbUser" value="iki1uc" placeholder="GitHub-User" style="flex:0.7;">
+      <input type="password" id="wbToken" placeholder="Token (optional)" style="flex:1;">
+      <button class="primary" id="wbLoad">⬇ Laden</button>
+      <input type="text" id="wbFilter" placeholder="🔎 Filter…" style="flex:0.7;">
+      <span style="font-size:10px;color:#5a7a8a;" id="wbCount">0 Repos</span>
+    </div>
+
+    <div class="workboard-layout">
+      <div>
+        <div style="font-size:10px;color:#5a7a8a;margin-bottom:4px;">🔷 Alle Repos · Klick = ins Workboard</div>
+        <div class="repo-grid-wb" id="wbGrid"></div>
+      </div>
+      <div class="wb-board">
+        <h4>🔗 WORKBOARD <span id="wbBoardCount">0</span></h4>
+
+        <div class="tier-track" id="wbTierTrack"></div>
+
+        <div style="display:flex;gap:4px;margin:6px 0;">
+          <input type="text" id="wbPlan" placeholder="🕓 geplant…" style="flex:1;font-size:9px;padding:3px 8px;">
+          <button id="wbAddPlan">+</button>
+        </div>
+
+        <div id="wbBoardList"></div>
+
+        <div style="display:flex;gap:4px;margin-top:6px;">
+          <button id="wbExport">📋 Export</button>
+          <button class="danger" id="wbClear">⟲ Leeren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="log-box" id="logBox">
+    <div class="entry"><span class="time">[INIT]</span> <span class="msg ok">🧿 RESPO · HUB geladen · 3 Module</span></div>
+  </div>
+
+  <div class="footer">
+    <span class="stat"><span class="gold">★</span> RESPO-HUB · 81-MATRIX · HDF · WORKBOARD</span>
+    <span class="stat">⌨️ 1=Matrix  2=HDF  3=Board</span>
+    <span class="stat">🔷 <span id="fTotal">0</span> · 🔗 <span id="fBoard">0</span></span>
+  </div>
+
 </div>
 
-<main>
-  <!-- GRID / EVALUATOR -->
-  <div class="panel">
-    <h3>🧮 Respo‑Grid · QI/IQQ‑Evaluator</h3>
-    <div id="controls">
-      <label>Grid
-        <select id="levelSel">
-          <option value="1">3×3 (9)</option>
-          <option value="2">9×9 (81)</option>
-          <option value="3">27×27 (729)</option>
-        </select>
-      </label>
-      <label>QI <input id="qi" type="range" min="0" max="1" step="0.01" value="0.65"></label>
-      <label>IQQ <input id="iqq" type="range" min="0" max="1" step="0.01" value="0.35"></label>
-      <button id="genBtn" class="primary">▶ Erzeuge Grid</button>
-      <button id="autoFill">🎲 Auto‑Fill</button>
-      <button id="scoreAll">⚡ Scores</button>
-      <button id="exportBtn">💾 Export JSON</button>
-    </div>
-    <div id="grid"></div>
-  </div>
-
-  <!-- DETAIL PANEL -->
-  <div class="panel">
-    <h3>🔍 Details · THREEHOCH3</h3>
-    <div id="threehoch3-info" class="row"></div>
-
-    <div id="detail-content">Wähle eine Zelle im Grid, um Details zu sehen.</div>
-
-    <div>
-      <div style="font-size:9px;color:#567;margin-top:8px;">Top‑Respos (final_score)</div>
-      <div id="topList"></div>
-    </div>
-
-    <div style="font-size:9px;color:#567;margin-top:6px;">Multiskala‑Aggregation (φ‑Gewichte)</div>
-    <div id="multiscaleInfo" style="font-size:9px;color:#9f9;">—</div>
-
-    <svg id="circleSVG" width="100%" height="220" viewBox="0 0 320 220">
-      <g id="plot" transform="translate(160,110)"></g>
-    </svg>
-
-    <div id="log"></div>
-  </div>
-</main>
-
-<footer>3hoch3 · Energie‑Wurzelstation (27D) · nutzt QI/IQQ, φ‑Multiskala und Respo‑Zustände (OK/NOK/FLOW/BREAK/ECHO/VOID/ROOT) — © iki1uc wieimmer</footer>
-
 <script>
-// ============================================================
-// KONSTANTEN (aus 3hoch3.js, respo.js, README, PREFETCH_3)
-// ============================================================
-const PHI = (1 + Math.sqrt(5)) / 2;
+"use strict";
+/* ================================================================
+   RESPO · HUB – konsolidierte Menüführung
+   Module: 81-MATRIX, HDF-RESOLVER, WORKBOARD
+   ================================================================ */
 
-const THREEHOCH3 = {
-  station: "3hoch3", dim: 27, energy: true,
-  connect(){ return ["3x3", "9x9", "81"]; }
+// ─── 1. MENÜ-NAVIGATION ──────────────────────────────────────────
+const tabs = {
+  matrix: document.getElementById('tabMatrix'),
+  hdf: document.getElementById('tabHdf'),
+  workboard: document.getElementById('tabWorkboard')
 };
+const menuBtns = document.querySelectorAll('.menu-bar button');
 
-const ROOM = {
-  station: "3hoch3", value: 27, type: "energy-matrix",
-  links: { root: "ULTRA-NC3×3.room", tensor: "ULTRA-NC9×9.room", nc: "81.room" },
-  use: "6E-optimization"
-};
+menuBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    menuBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    Object.values(tabs).forEach(t => t.classList.remove('active'));
+    const target = document.getElementById(btn.dataset.tab);
+    if (target) target.classList.add('active');
+    log(`📂 Tab gewechselt: ${btn.textContent.trim()}`, 'ok');
+  });
+});
 
-const RESPO_STATES = {
-  OK:    { label: "OK",    role: "klare Zustimmung", factor: 1.1,  color: 'var(--ok)' },
-  NOK:   { label: "NOK",   role: "klare Ablehnung",  factor: 0.6,  color: 'var(--nok)' },
-  FLOW:  { label: "FLOW",  role: "System fließt",    factor: 1.15, color: 'var(--flow)' },
-  BREAK: { label: "BREAK", role: "System bricht",    factor: 0.5,  color: 'var(--break)' },
-  ECHO:  { label: "ECHO",  role: "Rückmeldung/Spiegel", factor: 1.0, color: 'var(--echo)' },
-  VOID:  { label: "VOID",  role: "Leere / Neutral",  factor: 0.3,  color: 'var(--void)' },
-  ROOT:  { label: "ROOT",  role: "Rückkehr z. Ursprung", factor: 1.2, color: 'var(--root)' }
-};
-
-const STATIONS = [
-  { dim: "3",   name: "Form",         modul: "axes.js" },
-  { dim: "3×3 (9)", name: "Wurzelraum", modul: "ULTRA-NC3×3.room" },
-  { dim: "3³ (27)", name: "Energie‑Matrix", modul: "3hoch3.room" },
-  { dim: "6",   name: "Dualform",     modul: "fusion9.js" },
-  { dim: "9",   name: "Tensor‑Wurzel", modul: "PRE9×9.math" },
-  { dim: "12",  name: "Tensor‑Quadrat", modul: "pipeline12.master.js" },
-  { dim: "6E",  name: "Energieform",  modul: "respo_bridge.js" }
-];
-
-const AXES = [
-  {name:'conceptual', keywords:['axiom','theory','idea','concept']},
-  {name:'technical', keywords:['code','implementation','api','function','module']},
-  {name:'repro', keywords:['example','reproduce','dataset','script','seed','steps']},
-  {name:'usability', keywords:['guide','readme','usage','install','ui']},
-  {name:'privacy', keywords:['email','pii','personal','secret','key','password']},
-  {name:'performance', keywords:['perf','speed','optimize','latency','scale']},
-  {name:'tests', keywords:['test','unit','assert','expected','verify']},
-  {name:'ethics', keywords:['ethic','bias','impact','safety']},
-  {name:'integration', keywords:['integrate','plugin','adapter','interop']}
-];
-
-function clamp(v,a=0,b=1){ return Math.max(a, Math.min(b, v)); }
-function mean(arr){ return arr.length ? arr.reduce((s,x)=>s+x,0)/arr.length : 0; }
-function phiWeights(nMax){
-  const ws = Array.from({length:nMax+1}, (_,n)=>Math.pow(1/PHI,n));
-  const s = ws.reduce((a,b)=>a+b,0);
-  return ws.map(w=>w/s);
-}
-function $(id){ return document.getElementById(id); }
-function escapeHtml(s){ return (s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-
-// ============================================================
-// LOG
-// ============================================================
-function log(msg, type='info'){
-  const logDiv = $('log');
+// ─── 2. LOG ──────────────────────────────────────────────────────
+function log(msg, type = '') {
+  const box = document.getElementById('logBox');
+  const time = new Date().toLocaleTimeString('de-DE');
+  const cls = ['ok','warn','err'].includes(type) ? type : '';
   const entry = document.createElement('div');
   entry.className = 'entry';
-  const time = new Date().toLocaleTimeString();
-  entry.innerHTML = `<span class="time">[${time}]</span> <span class="${type}">${msg}</span>`;
-  logDiv.appendChild(entry);
-  logDiv.scrollTop = logDiv.scrollHeight;
-  while (logDiv.children.length > 60) logDiv.removeChild(logDiv.firstChild);
+  entry.innerHTML = `<span class="time">[${time}]</span> <span class="msg ${cls}">${msg}</span>`;
+  box.appendChild(entry);
+  box.scrollTop = box.scrollHeight;
+  while (box.children.length > 40) box.removeChild(box.firstChild);
 }
 
-// ============================================================
-// EVAL / SCORING (arg, xarg, arg3te + Respo‑Zustand als Faktor)
-// ============================================================
-function evalRespo(confs, QI, IQQ){
-  const base = mean(confs);
-  const maxc = Math.max(...confs), minc = Math.min(...confs);
-  const variance = maxc - minc;
-  const combined = clamp(QI*base + (1 - IQQ)*maxc, 0, 1);
-  const arg = combined;
-  const xarg = variance;
-  const arg3te = Number((combined * (1 - xarg)).toFixed(6));
-  return { base, maxc, minc, variance, arg, xarg, arg3te };
-}
+// ─── 3. TASTATUR ────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.key === '1') { menuBtns[0].click(); }
+  if (e.key === '2') { menuBtns[1].click(); }
+  if (e.key === '3') { menuBtns[2].click(); }
+});
 
-function axisCoverage(text){
-  const t = (text||'').toLowerCase();
-  let matched = 0;
-  for(const a of AXES){
-    for(const k of a.keywords){ if(t.includes(k)){ matched++; break; } }
-  }
-  return matched / AXES.length;
-}
+// ================================================================
+// MODUL A: 81-MATRIX
+// ================================================================
+const MATRIX_SYMBOLE = ["▲","▼","◄","►","◆","◇","○","●","■","□","✦","✧","✪","✫","✬","✭","✮","✯","☀","☾","⊕","⚑","⚐","⚙","✹","✸","✶","✷","✳","✴","✱","✲","✢","✣","✤","✥","✦","✧","✩","✪","✫","✬","✭","✮","✯","✰","✱","✲","✳","✴","✵","✶","✷","✸","✹","✺","✻","✼","✽","✾","✿","❀","❁","❂","❃","❄","❅","❆","❇","❈","❉","❊","✦","✧","✪","✫","✬","✭","✮","✯","✰","✱","✲","✳","✴","✵","✶","✷","✸","✹"];
+const PFAD = [81,9,3,9,81];
+const MODE_MAP = {0:'STAGE',1:'STAGE',2:'STAGE',3:'STAGE',4:'AIR',5:'AIR',6:'AIR',7:'AIR',8:'AIV',9:'AIV',10:'OMNI',11:'OMNI'};
 
-function scoreRespo(respo, QI, IQQ){
-  const confs = respo.confs || [0.5,0.5,0.5];
-  const e = evalRespo(confs, QI, IQQ);
-  const axis = axisCoverage(respo.text || '');
-  const stateInfo = RESPO_STATES[respo.state] || RESPO_STATES.VOID;
-  const raw = 0.6 * e.arg3te + 0.4 * axis;
-  const final = Number(clamp(raw * stateInfo.factor, 0, 1).toFixed(6));
-  return Object.assign({}, respo, e, { axis_score: axis, final_score: final });
-}
+const mState = {
+  grid: [],
+  activeCount: 0,
+  score: 0,
+  energy: 0,
+  gear: 0,
+  mode: 'STAGE',
+  a81: 81,
+  pfadIndex: 0,
+  loopTimer: null,
+  loopActive: false
+};
 
-// ============================================================
-// STATIONS‑MAP RENDERN
-// ============================================================
-function renderStations(activeIdx = 2){
-  const bar = $('stationBar');
-  bar.innerHTML = '';
-  STATIONS.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'station' + (i === activeIdx ? ' active' : '');
-    div.innerHTML = `<div class="dim">${s.dim}</div><div class="name">${s.name}</div><div class="role">${s.modul}</div>`;
-    bar.appendChild(div);
-  });
-  $('room-info').textContent =
-`3hoch3.room → root: ${ROOM.links.root} | tensor: ${ROOM.links.tensor} | nc: ${ROOM.links.nc}
-THREEHOCH3.connect() → [${THREEHOCH3.connect().join(', ')}]  (dim=${THREEHOCH3.dim})`;
-}
+const mGridEl = document.getElementById('matrixGrid');
 
-function renderThreehoch3Info(){
-  $('threehoch3-info').innerHTML =
-    `<span style="color:var(--root)">dim=${THREEHOCH3.dim}</span> · ` +
-    `<span style="color:var(--flow)">energy=${THREEHOCH3.energy}</span> · ` +
-    `<span style="color:var(--fg)">links: ${THREEHOCH3.connect().join(' → ')}</span>`;
-}
-
-// ============================================================
-// GRID / UI
-// ============================================================
-let state = { level:1, size:9, items:[], QI:0.65, IQQ:0.35, scored:null, multiscale:null };
-
-function gridSizeForLevel(level){
-  const side = Math.pow(3, level);
-  return { side, count: side * side };
-}
-
-function generateEmptyItems(level){
-  const info = gridSizeForLevel(level);
-  const items = [];
-  for(let i=0;i<info.count;i++){
-    items.push({ id:i, text:'', confs:[0.5,0.5,0.5], state:'VOID' });
-  }
-  return { items, side: info.side };
-}
-
-function buildGrid(level){
-  const { items, side } = generateEmptyItems(level);
-  state.level = level; state.size = items.length; state.items = items; state.scored = null;
-  renderGrid(side);
-  $('topList').innerHTML = '';
-  $('plot').innerHTML = '';
-  $('multiscaleInfo').textContent = 'keine Multiskala berechnet';
-  renderStations(Math.min(level, 2)); // Level 1→9D-Station, 2→27D, 3→27D (Grenze)
-  log(`▶ Grid erzeugt: ${side}×${side} (${items.length} Zellen)`, 'ok');
-}
-
-function renderGrid(side){
-  const gridEl = $('grid');
-  gridEl.innerHTML = '';
-  const cellPx = Math.max(18, Math.floor(560/side));
-  gridEl.style.gridTemplateColumns = `repeat(${side}, ${cellPx}px)`;
-  state.items.forEach((it, idx) => {
+function buildMatrixGrid() {
+  mGridEl.innerHTML = '';
+  mState.grid = [];
+  for (let i=0; i<81; i++) {
     const cell = document.createElement('div');
-    cell.className = 'cell';
-    cell.innerHTML = `<span class="idx">${idx+1}</span><span class="state-dot state-${it.state}"></span>`;
-    cell.title = `Zelle ${idx+1} · ${it.state}`;
-    cell.onclick = () => openEditor(idx);
-    gridEl.appendChild(cell);
-    it._el = cell;
-  });
-}
-
-function openEditor(idx){
-  const it = state.items[idx];
-  const stateOptions = Object.keys(RESPO_STATES).map(k =>
-    `<option value="${k}" ${it.state===k?'selected':''}>${k} — ${RESPO_STATES[k].role}</option>`
-  ).join('');
-
-  $('detail-content').innerHTML = `
-    <div><strong>Zelle ${idx+1}</strong></div>
-    <textarea id="editText" placeholder="Respo‑Text (Keywords steuern axis_score)">${escapeHtml(it.text)}</textarea>
-    <div class="row">
-      <label>Respo‑Zustand
-        <select id="editState">${stateOptions}</select>
-      </label>
-    </div>
-    <div class="row">
-      <label>c1 <input id="c1" type="range" min="0" max="1" step="0.01" value="${it.confs[0]}"></label>
-      <span id="c1v">${it.confs[0]}</span>
-    </div>
-    <div class="row">
-      <label>c2 <input id="c2" type="range" min="0" max="1" step="0.01" value="${it.confs[1]}"></label>
-      <span id="c2v">${it.confs[1]}</span>
-    </div>
-    <div class="row">
-      <label>c3 <input id="c3" type="range" min="0" max="1" step="0.01" value="${it.confs[2]}"></label>
-      <span id="c3v">${it.confs[2]}</span>
-    </div>
-    <div class="row">
-      <button id="saveCell" class="primary">Speichern</button>
-      <button id="clearCell">Leeren</button>
-      <button id="scoreCell">Score</button>
-    </div>
-  `;
-  $('c1').oninput = ()=> $('c1v').textContent = $('c1').value;
-  $('c2').oninput = ()=> $('c2v').textContent = $('c2').value;
-  $('c3').oninput = ()=> $('c3v').textContent = $('c3').value;
-
-  $('saveCell').onclick = ()=>{
-    it.text = $('editText').value.trim();
-    it.state = $('editState').value;
-    it.confs = [Number($('c1').value), Number($('c2').value), Number($('c3').value)];
-    it._el.querySelector('.state-dot').className = `state-dot state-${it.state}`;
-    log(`💾 Zelle ${idx+1} gespeichert (${it.state})`, 'ok');
-  };
-  $('clearCell').onclick = ()=>{
-    it.text=''; it.confs=[0.5,0.5,0.5]; it.state='VOID';
-    it._el.querySelector('.state-dot').className = 'state-dot state-VOID';
-    log(`⟲ Zelle ${idx+1} geleert`, 'warn');
-  };
-  $('scoreCell').onclick = ()=>{
-    const scored = scoreRespo(it, state.QI, state.IQQ);
-    $('detail-content').innerHTML =
-      `<div><strong>Score Zelle ${idx+1}</strong></div>
-       <pre style="background:#001;padding:8px;border-radius:6px;font-size:9px;">
-arg: ${scored.arg}
-xarg: ${scored.xarg}
-arg3te: ${scored.arg3te}
-axis: ${scored.axis_score.toFixed(3)}
-state: ${scored.state} (factor ${RESPO_STATES[scored.state].factor})
-final: ${scored.final_score}
-       </pre>`;
-    log(`⚡ Zelle ${idx+1} gescored: final=${scored.final_score}`, 'info');
-  };
-}
-
-// ============================================================
-// BATCH SCORING / TOP LIST / PLOT
-// ============================================================
-function scoreAll(){
-  state.QI = Number($('qi').value);
-  state.IQQ = Number($('iqq').value);
-  const scored = state.items.map((it, idx) => scoreRespo(Object.assign({}, it, {id: idx}), state.QI, state.IQQ));
-  state.scored = scored;
-  renderTopList();
-  renderPlot(scored.slice(0, Math.min(200, scored.length)));
-  computeMultiscale(scored);
-  scored.forEach((s, idx) => {
-    const el = state.items[idx]._el;
-    let scoreTag = el.querySelector('.score');
-    if(!scoreTag){ scoreTag = document.createElement('span'); scoreTag.className = 'score'; el.appendChild(scoreTag); }
-    scoreTag.textContent = s.final_score.toFixed(2);
-  });
-  log(`⚡ ${scored.length} Zellen gescored (QI=${state.QI}, IQQ=${state.IQQ})`, 'ok');
-}
-
-function renderTopList(){
-  if(!state.scored) return;
-  const sorted = [...state.scored].sort((a,b)=>b.final_score - a.final_score);
-  $('topList').innerHTML = sorted.slice(0,20).map(s => `
-    <div class="entry">
-      <strong>#${s.id+1}</strong> final=${s.final_score.toFixed(3)} · ${s.state}
-      <div style="color:#9aa">${escapeHtml((s.text||'').slice(0,80))}</div>
-    </div>`).join('');
-}
-
-function renderPlot(items){
-  const plotG = $('plot');
-  plotG.innerHTML = '';
-  const maxR = 95;
-  items.forEach(it => {
-    const angle = it.arg3te * Math.PI * 2;
-    const r = 15 + it.axis_score * maxR;
-    const x = Math.cos(angle) * r, y = Math.sin(angle) * r;
-    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', 5);
-    const stateColorMap = { OK:'#4f4', NOK:'#f44', FLOW:'#4af', BREAK:'#f84', ECHO:'#f4f', VOID:'#666', ROOT:'#ffd700' };
-    c.setAttribute('fill', stateColorMap[it.state] || '#444');
-    c.setAttribute('stroke', '#022');
-    c.addEventListener('mouseenter', ()=> {
-      c.setAttribute('r', 8);
-      $('detail-content').textContent = `#${it.id+1} final=${it.final_score.toFixed(3)} arg3te=${it.arg3te.toFixed(3)} state=${it.state}`;
-    });
-    c.addEventListener('mouseleave', ()=> c.setAttribute('r', 5));
-    plotG.appendChild(c);
-  });
-}
-
-function computeMultiscale(scored){
-  const L = state.level;
-  const levelScores = [];
-  for(let lvl=1; lvl<=L; lvl++){
-    const factor = Math.pow(3, state.level - lvl);
-    const groupMeans = {};
-    scored.forEach((s,i)=>{
-      const group = Math.floor(i / (factor*factor));
-      (groupMeans[group] = groupMeans[group] || []).push(s.final_score);
-    });
-    levelScores.push(mean(Object.values(groupMeans).map(mean)));
+    cell.className = 'cell81';
+    cell.dataset.idx = i;
+    cell.textContent = MATRIX_SYMBOLE[i % MATRIX_SYMBOLE.length];
+    cell.addEventListener('click', () => toggleMatrixCell(i));
+    mGridEl.appendChild(cell);
+    mState.grid.push({ active: false, elem: cell });
   }
-  const ws = phiWeights(levelScores.length - 1);
-  const agg = levelScores.reduce((sum,val,i)=> sum + val*ws[i], 0);
-  $('multiscaleInfo').textContent = `Levels ${levelScores.map((v,i)=>`L${i+1}=${v.toFixed(3)}`).join(', ')} → aggregated=${agg.toFixed(4)}`;
-  state.multiscale = { levelScores, weights: ws, aggregated: agg };
+  updateMatrixUI();
 }
 
-// ============================================================
-// AUTO‑FILL / EXPORT
-// ============================================================
-function autoFillSample(){
-  const stateKeys = Object.keys(RESPO_STATES);
-  state.items.forEach((it, idx)=>{
-    it.text = `Respo ${idx+1} example ${idx%5===0?'test':''} ${idx%7===0?'api':''} ${idx%11===0?'axiom':''}`;
-    it.confs = [Number((0.4+Math.random()*0.6).toFixed(2)), Number((0.4+Math.random()*0.6).toFixed(2)), Number((0.4+Math.random()*0.6).toFixed(2))];
-    it.state = stateKeys[idx % stateKeys.length];
-    if(it._el) it._el.querySelector('.state-dot').className = `state-dot state-${it.state}`;
+function toggleMatrixCell(idx) {
+  const cell = mState.grid[idx];
+  cell.active = !cell.active;
+  const el = cell.elem;
+  if (cell.active) {
+    el.classList.add('active');
+    mState.activeCount++;
+    mState.score += 10;
+    mState.energy = Math.min(100, mState.energy + 2);
+    if (Math.random() > 0.7) {
+      el.style.boxShadow = '0 0 40px rgba(255,215,0,0.6)';
+      setTimeout(() => el.style.boxShadow = '', 300);
+    }
+  } else {
+    el.classList.remove('active');
+    mState.activeCount--;
+    mState.score = Math.max(0, mState.score - 2);
+    mState.energy = Math.max(0, mState.energy - 1);
+  }
+  updateMatrixUI();
+  log(`🔹 Zelle ${idx} ${cell.active?'aktiviert':'deaktiviert'} · Score ${mState.score}`, 'ok');
+}
+
+function stepPFAD() {
+  mState.energy = Math.min(100, mState.energy + 3);
+  mState.gear = (mState.gear + 1) % 12;
+  mState.mode = MODE_MAP[mState.gear] || 'STAGE';
+  mState.pfadIndex = (mState.pfadIndex + 1) % PFAD.length;
+  mState.a81 = PFAD[mState.pfadIndex];
+  updateMatrixUI();
+  log(`⏭ Step · ${mState.mode} · A81=${mState.a81} · Zahnrad=${mState.gear}`, 'warn');
+}
+
+function toggleMatrixLoop() {
+  if (mState.loopTimer) {
+    clearInterval(mState.loopTimer);
+    mState.loopTimer = null;
+    mState.loopActive = false;
+    log('⏸ Matrix-Loop gestoppt', 'warn');
+  } else {
+    mState.loopTimer = setInterval(stepPFAD, 600);
+    mState.loopActive = true;
+    log('▶ Matrix-Loop gestartet', 'ok');
+  }
+  document.getElementById('ledMatrix').className = 'led ' + (mState.loopActive ? 'pulse' : 'on');
+}
+
+function resetMatrix() {
+  if (mState.loopTimer) { clearInterval(mState.loopTimer); mState.loopTimer = null; mState.loopActive = false; }
+  mState.grid.forEach(c => { c.active = false; c.elem.classList.remove('active'); });
+  mState.activeCount = 0;
+  mState.score = 0;
+  mState.energy = 0;
+  mState.gear = 0;
+  mState.mode = 'STAGE';
+  mState.a81 = 81;
+  mState.pfadIndex = 0;
+  document.getElementById('ledMatrix').className = 'led on';
+  updateMatrixUI();
+  log('⟲ Matrix zurückgesetzt', 'warn');
+}
+
+function randomMatrix() {
+  for (let i=0; i<30; i++) {
+    const idx = Math.floor(Math.random()*81);
+    const cell = mState.grid[idx];
+    if (!cell.active) {
+      cell.active = true;
+      cell.elem.classList.add('active');
+      mState.activeCount++;
+      mState.score += 10;
+      mState.energy = Math.min(100, mState.energy + 2);
+    }
+  }
+  updateMatrixUI();
+  log('🎲 30 Zellen zufällig aktiviert', 'ok');
+}
+
+function updateMatrixUI() {
+  document.getElementById('mActive').textContent = mState.activeCount;
+  document.getElementById('mEnergy').textContent = Math.round(mState.energy);
+  document.getElementById('mScore').textContent = mState.score;
+  document.getElementById('mGear').textContent = mState.gear;
+  document.getElementById('mMode').textContent = mState.mode;
+  document.getElementById('mA81').textContent = mState.a81;
+}
+
+// Matrix Events
+document.getElementById('mReset').addEventListener('click', resetMatrix);
+document.getElementById('mRandom').addEventListener('click', randomMatrix);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'l' || e.key === 'L') toggleMatrixLoop();
+  if (e.key === 'r' && document.getElementById('tabMatrix').classList.contains('active')) resetMatrix();
+  if (e.key === ' ' && document.getElementById('tabMatrix').classList.contains('active')) { e.preventDefault(); stepPFAD(); }
+});
+
+// ================================================================
+// MODUL B: HDF-RESOLVER
+// ================================================================
+const COMMANDS = {
+  d: { cmd:'d', tmp:'TMP.1', desc:'Erste Basis' },
+  e: { cmd:'e', tmp:'TMP.2', desc:'Zweite Basis' },
+  i: { cmd:'i', tmp:'TMP.3', desc:'Dritte Basis' },
+  n: { cmd:'n', tmp:'TMP.4', desc:'Vierte Basis' },
+  o: { cmd:'o', tmp:'TMP.5', desc:'Fünfte Basis' },
+  r: { cmd:'r', tmp:'TMP.6', desc:'Sechste Basis' },
+  s: { cmd:'s', tmp:'TMP.7', desc:'Siebte Basis' },
+  u: { cmd:'u', tmp:'TMP.8', desc:'Achte Basis' },
+  w: { cmd:'w', tmp:'TMP.9', desc:'Neunte Basis' }
+};
+const ONE_ROOM = [
+  { id:'#SLIDE', target:'SLIDE.hdf', dir:'/SLIDE/HDF/' },
+  { id:'#HDFRESPO', target:'HDFRESPO.hdf', dir:'/HDF/respo/' },
+  { id:'#ID', target:'ID.hdf', dir:'/SLIDE/ID/' }
+];
+let hdfCount = 0;
+let hdfAuto = null;
+
+function renderCommands() {
+  const grid = document.getElementById('cmdGrid');
+  grid.innerHTML = '';
+  Object.values(COMMANDS).forEach(cmd => {
+    const div = document.createElement('div');
+    div.className = 'cmd-item';
+    div.innerHTML = `<span class="key">${cmd.cmd}</span> <span class="target">→ ${cmd.tmp}</span><div class="desc">${cmd.desc}</div>`;
+    div.addEventListener('click', () => {
+      document.getElementById('resolverOutput').textContent = `⌨️ ${cmd.cmd} → ${cmd.tmp} · ${cmd.desc}`;
+      log(`⌨️ ${cmd.cmd} → ${cmd.tmp}`, 'warn');
+    });
+    grid.appendChild(div);
   });
-  log('🎲 Auto‑Fill abgeschlossen', 'ok');
 }
 
-function exportJSON(){
-  const out = {
-    meta: { level: state.level, size: state.size, QI: state.QI, IQQ: state.IQQ, timestamp: Date.now() },
-    room: ROOM, threehoch3: { dim: THREEHOCH3.dim, links: THREEHOCH3.connect() },
-    items: state.items.map(({_el, ...rest}) => rest),
-    scored: state.scored, multiscale: state.multiscale
-  };
-  const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = '3hoch3_respos.json'; a.click();
-  URL.revokeObjectURL(url);
-  log('💾 Export als 3hoch3_respos.json', 'ok');
+function renderOneRoom() {
+  document.getElementById('oneRoomBox').textContent = ONE_ROOM.map(i => `${i.id} → ${i.target} (${i.dir})`).join('\n');
 }
 
-// ============================================================
-// EVENTS / INIT
-// ============================================================
-$('genBtn').addEventListener('click', ()=> buildGrid(Number($('levelSel').value)));
-$('autoFill').addEventListener('click', autoFillSample);
-$('scoreAll').addEventListener('click', scoreAll);
-$('exportBtn').addEventListener('click', exportJSON);
-$('qi').addEventListener('input', ()=> state.QI = Number($('qi').value));
-$('iqq').addEventListener('input', ()=> state.IQQ = Number($('iqq').value));
+function hdfResolve(target) {
+  hdfCount++;
+  const found = ONE_ROOM.find(i => i.id === target);
+  const out = document.getElementById('resolverOutput');
+  if (found) {
+    out.textContent = `⚙️ RESOLVER · ${target}\n📁 Ziel: ${found.target}\n📂 Verzeichnis: ${found.dir}\n✅ VERARBEITET · HDF-Count: ${hdfCount}`;
+    log(`⚙️ ${target} → ${found.target}`, 'ok');
+    document.getElementById('ledHdf').className = 'led on';
+    setTimeout(() => document.getElementById('ledHdf').className = 'led', 500);
+  } else {
+    out.textContent = `❌ RESOLVER · ${target}\n📁 Ziel nicht gefunden`;
+    log(`❌ ${target} nicht gefunden`, 'err');
+  }
+  document.getElementById('hCount').textContent = hdfCount;
+}
 
-renderThreehoch3Info();
-buildGrid(1);
-log('🌀 3hoch3 · Response Layer 7 geladen', 'ok');
-log('⚛️ THREEHOCH3.connect() → [' + THREEHOCH3.connect().join(', ') + ']', 'info');
+function hdfSlide() { hdfResolve('#SLIDE'); }
+function hdfHdfRespo() { hdfResolve('#HDFRESPO'); }
+function hdfId() { hdfResolve('#ID'); }
+
+function toggleHdfAuto() {
+  if (hdfAuto) {
+    clearInterval(hdfAuto);
+    hdfAuto = null;
+    document.getElementById('hAuto').textContent = '▶ AUTO';
+    log('⏸ HDF-Auto pausiert', 'warn');
+  } else {
+    hdfAuto = setInterval(() => {
+      const targets = ['#SLIDE','#HDFRESPO','#ID'];
+      const t = targets[Math.floor(Math.random()*targets.length)];
+      if (t === '#SLIDE') hdfSlide();
+      else if (t === '#HDFRESPO') hdfHdfRespo();
+      else hdfId();
+    }, 2200);
+    document.getElementById('hAuto').textContent = '⏸ STOP';
+    log('▶ HDF-Auto gestartet', 'ok');
+  }
+}
+
+function resetHdf() {
+  if (hdfAuto) { clearInterval(hdfAuto); hdfAuto = null; document.getElementById('hAuto').textContent = '▶ AUTO'; }
+  hdfCount = 0;
+  document.getElementById('hCount').textContent = '0';
+  document.getElementById('resolverOutput').textContent = '⚙️ Resolver zurückgesetzt · bereit';
+  log('⟲ HDF zurückgesetzt', 'warn');
+}
+
+document.getElementById('hResolve').addEventListener('click', () => {
+  const t = prompt('Auftrag: #SLIDE, #HDFRESPO, #ID');
+  if (t) hdfResolve(t);
+});
+document.getElementById('hSlide').addEventListener('click', hdfSlide);
+document.getElementById('hHdfRespo').addEventListener('click', hdfHdfRespo);
+document.getElementById('hID').addEventListener('click', hdfId);
+document.getElementById('hAuto').addEventListener('click', toggleHdfAuto);
+document.getElementById('hReset').addEventListener('click', resetHdf);
+
+renderCommands();
+renderOneRoom();
+
+// ================================================================
+// MODUL C: WORKBOARD (GitHub + Auswahl)
+// ================================================================
+const wbState = {
+  repos: [],
+  selected: new Set(),
+  planned: [],
+  overrides: {}
+};
+
+// Storage
+function wbLoadStorage() {
+  try { wbState.overrides = JSON.parse(localStorage.getItem('respo_hub_overrides') || '{}'); } catch(_) {}
+  try { wbState.selected = new Set(JSON.parse(localStorage.getItem('respo_hub_selected') || '[]')); } catch(_) {}
+  try { wbState.planned = JSON.parse(localStorage.getItem('respo_hub_planned') || '[]'); } catch(_) {}
+}
+function wbSaveSelected() { localStorage.setItem('respo_hub_selected', JSON.stringify([...wbState.selected])); }
+function wbSavePlanned() { localStorage.setItem('respo_hub_planned', JSON.stringify(wbState.planned)); }
+function wbSaveOverrides() { localStorage.setItem('respo_hub_overrides', JSON.stringify(wbState.overrides)); }
+wbLoadStorage();
+
+// Ampel
+function wbAmpel(repo) {
+  if (wbState.overrides[repo.id]) return wbState.overrides[repo.id];
+  if (repo.planned) return 'gelb';
+  if (!repo.pushed_at) return 'gelb';
+  const tage = (Date.now() - new Date(repo.pushed_at).getTime()) / 86400000;
+  if (repo.open_issues > 0) return 'gelb';
+  if (tage <= 7) return 'gruen';
+  if (tage <= 30) return 'gelb';
+  return 'rot';
+}
+
+function wbAllEntries() {
+  const planned = wbState.planned.map(p => ({ id:p.id, name:p.name, full_name:p.name, url:null, pushed_at:null, open_issues:0, planned:true }));
+  return [...wbState.repos, ...planned];
+}
+
+function wbFiltered() {
+  const q = document.getElementById('wbFilter').value.trim().toLowerCase();
+  const all = wbAllEntries();
+  if (!q) return all;
+  return all.filter(e => e.name.toLowerCase().includes(q));
+}
+
+async function wbLoadRepos() {
+  const user = document.getElementById('wbUser').value.trim();
+  const token = document.getElementById('wbToken').value.trim();
+  if (!user) { log('⚠️ Bitte Benutzername eingeben', 'warn'); return; }
+  log(`⬇ Lade Repos für "${user}" …`, 'ok');
+  try {
+    let repos = []; let page = 1; const headers = token ? { Authorization: `token ${token}` } : {};
+    while (true) {
+      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&page=${page}&sort=pushed`, { headers });
+      if (!res.ok) break;
+      const data = await res.json();
+      if (!data || data.length === 0) break;
+      repos.push(...data.map(r => ({
+        id: r.full_name,
+        name: r.name,
+        full_name: r.full_name,
+        url: r.html_url,
+        pushed_at: r.pushed_at,
+        open_issues: r.open_issues_count,
+        planned: false
+      })));
+      if (data.length < 100) break;
+      page++; if (page > 20) break;
+    }
+    wbState.repos = repos;
+    log(`✅ ${repos.length} Repos geladen`, 'ok');
+  } catch (err) { log(`❌ ${err.message}`, 'err'); }
+  wbRenderAll();
+}
+
+function wbToggle(repo) {
+  if (wbState.selected.has(repo.id)) {
+    wbState.selected.delete(repo.id);
+    log(`➖ ${repo.name} entfernt`, 'warn');
+  } else {
+    wbState.selected.add(repo.id);
+    log(`➕ ${repo.name} hinzugefügt`, 'ok');
+  }
+  wbSaveSelected();
+  wbRenderAll();
+}
+
+function wbSelectTopN(n) {
+  const entries = wbAllEntries().slice().sort((a,b) => {
+    const da = a.pushed_at ? new Date(a.pushed_at).getTime() : -1;
+    const db = b.pushed_at ? new Date(b.pushed_at).getTime() : -1;
+    return db - da;
+  });
+  wbState.selected = new Set(entries.slice(0, n).map(e => e.id));
+  wbSaveSelected();
+  log(`🌀 Top ${n} Repos ausgewählt`, 'ok');
+  wbRenderAll();
+}
+
+function wbAddPlanned() {
+  const input = document.getElementById('wbPlan');
+  const name = input.value.trim();
+  if (!name) return;
+  const id = 'geplant:' + name;
+  if (wbState.planned.some(p => p.id === id)) { log(`⚠️ "${name}" bereits geplant`, 'warn'); return; }
+  wbState.planned.push({ id, name });
+  wbSavePlanned();
+  input.value = '';
+  log(`🕓 "${name}" geplant`, 'ok');
+  wbRenderAll();
+}
+
+function wbExport() {
+  const entries = wbAllEntries();
+  const byId = new Map(entries.map(e => [e.id, e]));
+  const lines = [...wbState.selected].map(id => {
+    const r = byId.get(id);
+    if (!r) return id;
+    return r.planned ? `🕓 ${r.name} (geplant)` : `🔗 ${r.name}${r.url ? ' — ' + r.url : ''}`;
+  });
+  const text = lines.join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => log('📋 Exportiert', 'ok'));
+  } else { log('⚠️ Clipboard nicht verfügbar', 'warn'); }
+}
+
+function wbClear() {
+  wbState.selected = new Set();
+  wbSaveSelected();
+  log('⟲ Workboard geleert', 'warn');
+  wbRenderAll();
+}
+
+function wbRenderAll() {
+  // Grid
+  const grid = document.getElementById('wbGrid');
+  const entries = wbFiltered();
+  grid.innerHTML = '';
+  entries.forEach(repo => {
+    const ampel = wbAmpel(repo);
+    const sel = wbState.selected.has(repo.id);
+    const tile = document.createElement('div');
+    tile.className = 'repo-tile-wb' + (sel ? ' selected' : '');
+    tile.innerHTML = `
+      <div class="chk">${sel ? '✓' : ''}</div>
+      <div class="name"><span class="dot ${ampel}"></span>${repo.name}</div>
+      <div class="meta">${repo.planned ? '🕓 geplant' : (repo.pushed_at ? new Date(repo.pushed_at).toLocaleDateString('de-DE') : '')} ${repo.open_issues ? '· Issues:'+repo.open_issues : ''}</div>
+    `;
+    tile.addEventListener('click', () => wbToggle(repo));
+    grid.appendChild(tile);
+  });
+  document.getElementById('wbCount').textContent = `${wbState.repos.length} Repos · ${wbState.planned.length} geplant`;
+  document.getElementById('fTotal').textContent = wbAllEntries().length;
+
+  // Tier-Track
+  const track = document.getElementById('wbTierTrack');
+  track.innerHTML = '';
+  const tiers = [3,9,27,81,243,729];
+  const n = wbState.selected.size;
+  let reached = -1;
+  tiers.forEach((t,i) => { if (n >= t) reached = i; });
+  tiers.forEach((t,i) => {
+    if (i>0) { const a = document.createElement('span'); a.className='tier-arrow'; a.textContent='→'; track.appendChild(a); }
+    const step = document.createElement('div');
+    let cls = 'tier-step';
+    if (i <= reached) cls += ' reached';
+    if (i === reached+1 || (reached === -1 && i === 0)) cls += ' current';
+    step.className = cls;
+    step.innerHTML = `<span class="num">${t}</span>`;
+    step.title = `Top ${t} auswählen`;
+    step.addEventListener('click', () => wbSelectTopN(t));
+    track.appendChild(step);
+  });
+
+  // Board-Liste
+  const list = document.getElementById('wbBoardList');
+  const all = wbAllEntries();
+  const byId = new Map(all.map(e => [e.id, e]));
+  list.innerHTML = '';
+  [...wbState.selected].forEach(id => {
+    const r = byId.get(id);
+    const chip = document.createElement('div');
+    chip.className = 'wb-chip';
+    chip.innerHTML = `<span>${r ? (r.planned ? '🕓 ':'🔗 ') + r.name : id}</span><button class="rm">✕</button>`;
+    chip.querySelector('.rm').addEventListener('click', () => { wbState.selected.delete(id); wbSaveSelected(); wbRenderAll(); });
+    list.appendChild(chip);
+  });
+  document.getElementById('wbBoardCount').textContent = wbState.selected.size;
+  document.getElementById('fBoard').textContent = wbState.selected.size;
+  document.getElementById('ledBoard').className = 'led ' + (wbState.selected.size > 0 ? 'on' : 'off');
+}
+
+document.getElementById('wbLoad').addEventListener('click', wbLoadRepos);
+document.getElementById('wbFilter').addEventListener('input', wbRenderAll);
+document.getElementById('wbAddPlan').addEventListener('click', wbAddPlanned);
+document.getElementById('wbPlan').addEventListener('keydown', (e) => { if (e.key === 'Enter') wbAddPlanned(); });
+document.getElementById('wbExport').addEventListener('click', wbExport);
+document.getElementById('wbClear').addEventListener('click', wbClear);
+
+// ================================================================
+// INIT
+// ================================================================
+buildMatrixGrid();
+log('🧿 RESPO · HUB initialisiert · 3 Module aktiv', 'ok');
+log('⌨️  1=Matrix  2=HDF  3=Board  space=Step  l=Loop  r=Reset', 'warn');
+wbRenderAll();
+
+// Matrix anfangs mit 10 aktiven Zellen
+setTimeout(() => {
+  for (let i=0; i<10; i++) {
+    const idx = Math.floor(Math.random()*81);
+    const cell = mState.grid[idx];
+    if (!cell.active) {
+      cell.active = true;
+      cell.elem.classList.add('active');
+      mState.activeCount++;
+      mState.score += 10;
+      mState.energy = Math.min(100, mState.energy + 2);
+    }
+  }
+  updateMatrixUI();
+  log('✨ 10 Matrix-Zellen initial aktiviert', 'ok');
+}, 300);
+
+// GitHub-Repos automatisch laden
+setTimeout(() => wbLoadRepos(), 500);
 </script>
-
 </body>
 </html>
